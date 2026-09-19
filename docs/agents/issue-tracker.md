@@ -14,7 +14,7 @@ GitHub-compatible) via curl for anything `tea` doesn't cover.
 
 ## Conventions
 
-- **Create an issue**: `tea issues create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
+- **Create an issue**: `tea issues create --title "..." --description "..."` (this `tea` uses `--description`/`-d`, not `--body`). For long/multi-line bodies write the markdown to a file and pass `--description-file <path>` (`-` for stdin).
 - **List issues**: `tea issues list --state open --labels "..." --output simple` with appropriate `--state`/`--labels` filters.
 - **Read an issue**: `tea issues <index>` (append `--comments` where your `tea` version supports it).
 - **Comment on an issue**: `tea comment <index> "..."`
