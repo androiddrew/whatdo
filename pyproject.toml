@@ -22,6 +22,7 @@ where = ["src"]
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
 optional-dependencies.otel = { file = ["otel-requirements.txt"] }
+optional-dependencies.laya = { file = ["laya-requirements.txt"] }
 
 [tool.setuptools_scm]
 
@@ -38,6 +39,11 @@ python_version = "3.12"
 strict = true
 mypy_path = "src"
 files = ["src/laya_server"]
+
+# `laya` is an optional extra imported lazily and ships no type stubs.
+[[tool.mypy.overrides]]
+module = ["laya", "laya.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

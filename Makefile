@@ -20,6 +20,7 @@ compile:
 	$(UV) pip compile requirements.in -o requirements.txt
 	$(UV) pip compile dev-requirements.in -o dev-requirements.txt
 	$(UV) pip compile otel-requirements.in -o otel-requirements.txt
+	$(UV) pip compile laya-requirements.in -o laya-requirements.txt
 
 ## Lint + format check (no changes).
 lint:

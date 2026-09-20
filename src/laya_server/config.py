@@ -10,8 +10,12 @@ reshaping configuration.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from laya_server.inference.laya_engine import DEFAULT_CHECKPOINT
 
 
 class ServerSettings(BaseModel):
@@ -26,6 +30,15 @@ class ServerSettings(BaseModel):
 
 class ModelSettings(BaseModel):
     """Which model a deployment serves and how it is resolved (ADR-0004)."""
+
+    # Which inference engine backs the service. "fake" is deterministic and
+    # GPU-free (CI, local dev); "laya" runs the real engine (needs the [laya]
+    # extra and, ideally, a GPU).
+    engine: Literal["fake", "laya"] = "fake"
+    # Laya checkpoint to load when engine == "laya". Proper served-model / alias
+    # resolution over these arrives in ticket #5.
+    laya_checkpoint: str = DEFAULT_CHECKPOINT
+    laya_subfolder: str | None = None
 
     served_model: str = "auto"
     device: str | None = None

@@ -49,6 +49,9 @@ def _argmax(probabilities: dict[str, float]) -> str:
 class FakeEngine:
     """Deterministic engine implementing the ``DecisionEngine`` protocol."""
 
+    def load(self) -> None:
+        """Nothing to load; the fake engine is ready on construction."""
+
     def is_ready(self) -> bool:
         return True
 

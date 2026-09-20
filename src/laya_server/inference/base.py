@@ -26,6 +26,13 @@ class PredictResult:
 class DecisionEngine(Protocol):
     """Computes typed decisions for a State against a set of Questions."""
 
+    def load(self) -> None:
+        """Load whatever the engine needs to serve (called once at startup).
+
+        Implementations that need nothing (e.g. the fake engine) may no-op.
+        """
+        ...
+
     def is_ready(self) -> bool:
         """Whether the engine is loaded and able to serve requests."""
         ...

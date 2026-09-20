@@ -11,20 +11,22 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.concurrency import run_in_threadpool
 
 from laya_server.api import health, systemone
 from laya_server.config import Settings
 from laya_server.inference.base import DecisionEngine
-from laya_server.inference.fake import FakeEngine
+from laya_server.inference.factory import build_engine
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Application lifespan.
+    """Application lifespan: load the engine so ``/readyz`` gates on it.
 
-    Real model loading (and readiness gating on it) is wired in here in a later
-    ticket; the engine is currently ready as soon as it is constructed.
+    Loading runs in a worker thread so a slow, blocking model load (the real
+    Laya engine) does not block the event loop.
     """
+    await run_in_threadpool(app.state.engine.load)
     yield
 
 
@@ -35,11 +37,11 @@ def create_app(
 
     Args:
         settings: Application settings; defaults to environment-derived settings.
-        engine: Inference engine; defaults to the deterministic ``FakeEngine``.
-            The real Laya engine and config-driven selection arrive in ticket #4.
+        engine: Inference engine; defaults to the engine selected by settings
+            (``FakeEngine`` unless ``LAYA_MODEL__ENGINE=laya``).
     """
     settings = settings or Settings()
-    engine = engine or FakeEngine()
+    engine = engine if engine is not None else build_engine(settings)
 
     app = FastAPI(title="laya-server", lifespan=lifespan)
     app.state.settings = settings
