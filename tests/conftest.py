@@ -19,10 +19,41 @@ from typesafe_sdk import TypeSafeClient
 
 from laya_server.app import create_app
 from laya_server.config import AuthSettings, Settings
+from laya_server.inference.base import PredictResult
 from laya_server.inference.fake import FakeEngine
+from laya_server.schemas.jev import JSONContent, NoulAnswer, Question
 
 # The single key the auth-enabled contract fixtures accept.
 AUTH_API_KEY = "contract-test-key"
+
+
+class BlockingEngine:
+    """A ``DecisionEngine`` whose ``predict`` blocks until released.
+
+    Lets a test pin a worker (and thereby drive the queue to saturation)
+    deterministically. Shared by the pool unit tests and the overload contract
+    test.
+    """
+
+    def __init__(self) -> None:
+        self.entered = threading.Event()
+        self._release = threading.Event()
+
+    def load(self) -> None:
+        pass
+
+    def is_ready(self) -> bool:
+        return True
+
+    def release(self) -> None:
+        self._release.set()
+
+    def predict(
+        self, state: JSONContent, questions: dict[str, Question]
+    ) -> PredictResult:
+        self.entered.set()
+        self._release.wait(timeout=10)
+        return PredictResult(answers={"billing": NoulAnswer(noul=0.5)}, input_tokens=1)
 
 
 @contextmanager

@@ -17,36 +17,59 @@ from laya_server.api import health, models, systemone
 from laya_server.api.auth import require_api_key
 from laya_server.config import Settings
 from laya_server.inference.base import DecisionEngine
-from laya_server.inference.factory import build_engine
+from laya_server.inference.factory import build_engines
+from laya_server.inference.pool import WorkerPool
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Application lifespan: load the engine so ``/readyz`` gates on it.
+    """Application lifespan: start the worker pool so ``/readyz`` gates on it.
 
-    Loading runs in a worker thread so a slow, blocking model load (the real
-    Laya engine) does not block the event loop.
+    Starting spawns the worker threads (each loads its own engine copy) and
+    then waits — off the event loop — until every copy is ready, so a slow,
+    blocking model load does not block the loop. The pool is drained on exit.
     """
-    await run_in_threadpool(app.state.engine.load)
-    yield
+    pool: WorkerPool = app.state.pool
+    pool.start()
+    try:
+        await run_in_threadpool(pool.wait_ready)
+    except BaseException:
+        # A failed load leaves sibling workers blocked on the queue; drain them
+        # rather than leak threads before propagating the startup failure.
+        await run_in_threadpool(pool.shutdown)
+        raise
+    try:
+        yield
+    finally:
+        await run_in_threadpool(pool.shutdown)
 
 
 def create_app(
-    settings: Settings | None = None, engine: DecisionEngine | None = None
+    settings: Settings | None = None,
+    engine: DecisionEngine | None = None,
+    engines: list[DecisionEngine] | None = None,
 ) -> FastAPI:
     """Build a configured FastAPI application.
 
     Args:
         settings: Application settings; defaults to environment-derived settings.
-        engine: Inference engine; defaults to the engine selected by settings
-            (``FakeEngine`` unless ``LAYA_MODEL__ENGINE=laya``).
+        engines: The engine copies backing the worker pool; defaults to
+            ``pool_size`` copies selected by settings.
+        engine: Convenience for injecting a single-copy pool (tests); ignored
+            when ``engines`` is given.
     """
     settings = settings or Settings()
-    engine = engine if engine is not None else build_engine(settings)
+    if engines is None:
+        engines = [engine] if engine is not None else build_engines(settings)
+    pool = WorkerPool(
+        engines,
+        queue_max=settings.server.queue_max,
+        request_timeout=settings.server.request_timeout,
+    )
 
     app = FastAPI(title="laya-server", lifespan=lifespan)
     app.state.settings = settings
-    app.state.engine = engine
+    app.state.pool = pool
 
     # Health probes are always open. The Jev endpoints get the auth dependency
     # only when auth is enabled; disabled means it is not applied at all (#6).

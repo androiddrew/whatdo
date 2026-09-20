@@ -6,8 +6,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
 
-from laya_server.api.dependencies import get_engine
-from laya_server.inference.base import DecisionEngine
+from laya_server.api.dependencies import get_pool
+from laya_server.inference.pool import WorkerPool
 
 router = APIRouter(tags=["health"])
 
@@ -21,10 +21,10 @@ def healthz() -> dict[str, str]:
 @router.get("/readyz")
 def readyz(
     response: Response,
-    engine: Annotated[DecisionEngine, Depends(get_engine)],
+    pool: Annotated[WorkerPool, Depends(get_pool)],
 ) -> dict[str, str]:
-    """Readiness: the inference engine is loaded and able to serve."""
-    if engine.is_ready():
+    """Readiness: every engine copy in the pool is loaded and able to serve."""
+    if pool.is_ready():
         return {"status": "ready"}
     response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return {"status": "not ready"}
