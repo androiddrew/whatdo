@@ -107,3 +107,16 @@ class SystemOneResponse(BaseModel):
     model: str
     answers: dict[str, Answer] = Field(min_length=1)
     usage: Usage
+
+
+# --------------------------------------------------------------------------- #
+# GET /v1/models                                                             #
+# --------------------------------------------------------------------------- #
+class ModelMetadata(BaseModel):
+    name: str
+    description: str
+    release_date: str
+
+
+class ModelsResponse(BaseModel):
+    models: list[ModelMetadata]

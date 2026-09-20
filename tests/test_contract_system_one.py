@@ -27,8 +27,8 @@ def test_system_one_round_trips_through_the_official_sdk(
         },
     )
 
-    # Default model is echoed back (real resolution arrives in ticket #4).
-    assert response.model == "jev-latest"
+    # jev-latest resolves to the default served model "auto" (ADR-0004 shim).
+    assert response.model == "auto"
     assert set(response.answers) == {"billing", "tone", "urgency"}
 
     noul = response.nouls["billing"]

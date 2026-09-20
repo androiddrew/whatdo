@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.concurrency import run_in_threadpool
 
-from laya_server.api import health, systemone
+from laya_server.api import health, models, systemone
 from laya_server.config import Settings
 from laya_server.inference.base import DecisionEngine
 from laya_server.inference.factory import build_engine
@@ -49,6 +49,7 @@ def create_app(
 
     app.include_router(health.router)
     app.include_router(systemone.router)
+    app.include_router(models.router)
 
     return app
 
