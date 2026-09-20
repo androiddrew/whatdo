@@ -1,6 +1,6 @@
 # Dependencies live in requirements files, referenced dynamically by pyproject
 
-The project pins dependencies in `requirements.in`/`dev-requirements.in`/`otel-requirements.txt` (compiled with uv), not inline in `pyproject.toml`. But the package must be `pip install`-able with an `[otel]` extra and published to the Gitea PyPI registry, which normally requires dependencies *in* `pyproject.toml`. We reconcile this with **setuptools dynamic dependencies**: `pyproject.toml` declares `dynamic = ["dependencies", "optional-dependencies"]` and points at the requirements files, so the deps still live in the requirements files while `pip install "laya-server[otel]"` works. OTEL imports are lazily guarded so the base install runs without the OTEL libraries.
+The project pins dependencies in `requirements.in`/`dev-requirements.in`/`otel-requirements.in` (compiled with uv to `.txt`), not inline in `pyproject.toml`. But the package must be `pip install`-able with an `[otel]` extra and published to the Gitea PyPI registry, which normally requires dependencies *in* `pyproject.toml`. We reconcile this with **setuptools dynamic dependencies**: `pyproject.toml` declares `dynamic = ["dependencies", "optional-dependencies"]` and points at the requirements files, so the deps still live in the requirements files while `pip install "laya-server[otel]"` works. OTEL imports are lazily guarded so the base install runs without the OTEL libraries.
 
 ## Considered options
 

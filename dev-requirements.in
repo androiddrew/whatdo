@@ -1,0 +1,8 @@
+# Development dependencies (abstract). Compile to dev-requirements.txt with `make compile`.
+-r requirements.in
+
+pytest
+httpx
+ruff
+mypy
+build

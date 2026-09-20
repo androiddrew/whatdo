@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  # Run on direct pushes to main (post-merge / protected branch) and on PRs.
+  # Scoping push to main avoids double runs: a feature branch with an open PR
+  # would otherwise trigger both `push` and `pull_request` for the same commit.
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # setuptools-scm derives the version from git history/tags.
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+      - run: uv python install 3.12
+      - run: make setup
+      - run: make lint
+      - run: make typecheck
+
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+      - run: uv python install 3.12
+      - run: make setup
+      - run: make test

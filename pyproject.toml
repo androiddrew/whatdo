@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laya-server"
+description = "A Typesafe-compatible Jev API server backed by the Laya decision engine"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+authors = [{ name = "Drew Bednar" }]
+# Runtime dependencies are NOT listed inline here (ADR-0002). They live in the
+# requirements files and are pulled in dynamically below.
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[project.urls]
+Homepage = "https://git.runcible.io/androiddrew/laya-server"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+optional-dependencies.otel = { file = ["otel-requirements.txt"] }
+
+[tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+files = ["src/laya_server"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "slow: real-model tests requiring a GPU; run locally via `make test-slow`, not in CI",
+]

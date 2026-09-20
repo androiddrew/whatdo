@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Fast pre-push gate: lint, type-check, and the non-slow test suite.
+# Installed by `make setup` (git config core.hooksPath .githooks).
+set -euo pipefail
+
+echo "[pre-push] running fast checks (lint + typecheck + test)..."
+make lint
+make typecheck
+make test
+
+echo "[pre-push] OK. Reminder: run 'make test-slow' locally (real Laya, needs a GPU)"
+echo "[pre-push]     before relying on real inference behaviour."
