@@ -6,3 +6,7 @@ httpx
 ruff
 mypy
 build
+
+# The official Typesafe SDK: driven by the contract tests to prove the server
+# speaks the Jev API. (Contract tests use FakeEngine, so no GPU is needed.)
+typesafe-sdk
