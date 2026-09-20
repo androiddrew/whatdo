@@ -18,7 +18,11 @@ from fastapi import FastAPI
 from typesafe_sdk import TypeSafeClient
 
 from laya_server.app import create_app
+from laya_server.config import AuthSettings, Settings
 from laya_server.inference.fake import FakeEngine
+
+# The single key the auth-enabled contract fixtures accept.
+AUTH_API_KEY = "contract-test-key"
 
 
 @contextmanager
@@ -59,8 +63,18 @@ def live_server() -> Iterator[str]:
 def sdk_client(
     live_server: str, monkeypatch: pytest.MonkeyPatch
 ) -> Iterator[TypeSafeClient]:
-    """The official Typesafe SDK, pointed at the live test server."""
+    """The official Typesafe SDK, pointed at the live (no-auth) test server."""
     monkeypatch.setenv("TYPESAFE_API_KEY", "test-key")
     monkeypatch.setenv("TYPESAFE_BASE_URL", live_server)
     with TypeSafeClient() as client:
         yield client
+
+
+@pytest.fixture
+def auth_live_server() -> Iterator[str]:
+    """A running FakeEngine server with auth enabled, accepting ``AUTH_API_KEY``."""
+    settings = Settings(
+        auth=AuthSettings(enabled=True, api_keys=[AUTH_API_KEY]),
+    )
+    with serve(create_app(settings=settings, engine=FakeEngine())) as url:
+        yield url

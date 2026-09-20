@@ -10,10 +10,11 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.concurrency import run_in_threadpool
 
 from laya_server.api import health, models, systemone
+from laya_server.api.auth import require_api_key
 from laya_server.config import Settings
 from laya_server.inference.base import DecisionEngine
 from laya_server.inference.factory import build_engine
@@ -47,9 +48,12 @@ def create_app(
     app.state.settings = settings
     app.state.engine = engine
 
+    # Health probes are always open. The Jev endpoints get the auth dependency
+    # only when auth is enabled; disabled means it is not applied at all (#6).
+    jev_dependencies = [Depends(require_api_key)] if settings.auth.enabled else []
     app.include_router(health.router)
-    app.include_router(systemone.router)
-    app.include_router(models.router)
+    app.include_router(systemone.router, dependencies=jev_dependencies)
+    app.include_router(models.router, dependencies=jev_dependencies)
 
     return app
 
