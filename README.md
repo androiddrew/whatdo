@@ -14,6 +14,24 @@ A caller submits a **State** (the content to evaluate) and a set of **Questions*
 - **Choice** — select one of a defined option set (returns the choice, its distribution, and a confidence)
 - **Score** — rate on an ordered rubric of ≥2 levels (returns a probability-weighted value and a confidence)
 
+### Example Curl Request
+
+```bash
+curl -X POST http://localhost:8123/v1/systemone \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "jev-latest",
+    "state": "Hi, I have been trying to connect my Stripe account for 3 days and the integration keeps failing. This is completely blocking our checkout flow!",
+    "questions": {
+      "urgency_expressed": {
+        "type": "noul",
+        "instructions": "Does this message express high urgency or a blocked workflow?"
+      }
+    }
+  }' | jq
+```
+
+
 See `CONTEXT.md` for the full domain glossary.
 
 ## Key characteristics
@@ -34,7 +52,7 @@ See `CONTEXT.md` for the full domain glossary.
   - [0003](./docs/adr/0003-worker-pool-and-529-overload.md) — worker pool & 529 overload
   - [0004](./docs/adr/0004-model-resolution.md) — model resolution & the jev-latest shim
 - **Original brief:** [`SPECIFICATION.md`](./SPECIFICATION.md)
-- **Full user-facing docs** (MKDocs) are planned — see the deployment/observability/quickstart chapters tracked in the issues.
+- **User-facing docs** (MKDocs): build locally with `make docs` (see `mkdocs.yml`) — Overview, Quickstart, Configuration, the Jev / System One contract, Deployment, Observability, and Load testing.
 
 ## Development
 

@@ -14,7 +14,7 @@ LAYA_FORK ?=
 FORK_BUILD_ARG := $(if $(LAYA_FORK),--build-arg LAYA_FORK="$(LAYA_FORK)",)
 
 .PHONY: setup compile lint fmt typecheck test test-otel test-slow run \
-	build-cpu build-cuda build-dev dist
+	build-cpu build-cuda build-dev docs docs-serve
 
 ## Create the dev virtualenv, install pinned dev deps + the package, install git hooks.
 setup:
@@ -30,6 +30,7 @@ compile:
 	$(UV) pip compile dev-requirements.in -o dev-requirements.txt
 	$(UV) pip compile otel-requirements.in -o otel-requirements.txt
 	$(UV) pip compile laya-requirements.in -o laya-requirements.txt
+	$(UV) pip compile docs-requirements.in -o docs-requirements.txt
 
 ## Lint + format check (no changes).
 lint:
@@ -80,3 +81,10 @@ build-dev:
 dist:
 	rm -rf dist
 	$(UV) build
+## Build the documentation site (strict — matches CI). Needs docs-requirements.txt.
+docs:
+	$(BIN)/mkdocs build --strict
+
+## Serve the docs locally with live reload.
+docs-serve:
+	$(BIN)/mkdocs serve

@@ -69,3 +69,18 @@ jobs:
             ACCEL=${{ matrix.accel }}
           push: false
           tags: laya-server:${{ matrix.accel }}
+
+  # Build the MKDocs site with --strict (no publish/hosting for now, #11).
+  # Installs the package so mkdocstrings can import laya_server, plus the docs
+  # tooling from docs-requirements.txt.
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+      - run: uv python install 3.12
+      - run: make setup
+      - run: uv pip install -r docs-requirements.txt
+      - run: make docs

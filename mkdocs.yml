@@ -1,0 +1,60 @@
+site_name: laya-server
+site_description: >-
+  A Typesafe-compatible Jev API server backed by the Laya non-autoregressive
+  decision engine.
+repo_url: https://git.runcible.io/androiddrew/laya-server
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_root_heading: true
+            show_source: false
+            show_if_no_docstring: true
+            members_order: source
+            docstring_style: google
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+
+# ADRs and agent-tooling docs live under docs/ but are not part of the built
+# site; excluding them keeps `mkdocs build --strict` (not-in-nav is an error).
+exclude_docs: |
+  adr/
+  agents/
+
+nav:
+  - Overview: index.md
+  - Quickstart: quickstart.md
+  - Configuration: configuration.md
+  - Jev / System One contract: contract.md
+  - Deployment: deployment.md
+  - Observability: observability.md
+  - Load testing: load-testing.md
