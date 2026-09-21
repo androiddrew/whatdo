@@ -49,3 +49,23 @@ jobs:
       - run: uv python install 3.12
       - run: make setup
       - run: make test-otel
+
+  # Build the cpu and cuda images (ADR-0001). Building needs no GPU; images are
+  # built but not pushed here (publishing is ticket #10).
+  build-images:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        accel: [cpu, cuda]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.accel }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          build-args: |
+            ACCEL=${{ matrix.accel }}
+          push: false
+          tags: laya-server:${{ matrix.accel }}

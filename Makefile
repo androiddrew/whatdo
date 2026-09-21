@@ -5,7 +5,16 @@ PY_VERSION ?= 3.12
 HOST ?= 127.0.0.1
 PORT ?= 8000
 
-.PHONY: setup compile lint fmt typecheck test test-otel test-slow run
+# Image build knobs (ADR-0001). IMAGE/TAG name the image; LAYA_FORK, when set to
+# a `git+…@ref` spec, installs laya from a fork instead of the pinned release.
+IMAGE ?= laya-server
+TAG ?= dev
+DOCKER ?= docker
+LAYA_FORK ?=
+FORK_BUILD_ARG := $(if $(LAYA_FORK),--build-arg LAYA_FORK="$(LAYA_FORK)",)
+
+.PHONY: setup compile lint fmt typecheck test test-otel test-slow run \
+	build-cpu build-cuda build-dev
 
 ## Create the dev virtualenv, install pinned dev deps + the package, install git hooks.
 setup:
@@ -52,3 +61,17 @@ test-slow:
 ## Run the app locally with autoreload.
 run:
 	$(BIN)/uvicorn laya_server.app:app --host $(HOST) --port $(PORT) --reload
+
+## Build the trim CPU image. Pass LAYA_FORK=git+<url>@<ref> to use a laya fork.
+build-cpu:
+	$(DOCKER) build --build-arg ACCEL=cpu $(FORK_BUILD_ARG) -t $(IMAGE):cpu-$(TAG) .
+
+## Build the CUDA image (builds on CPU-only hosts; running inference needs a GPU).
+build-cuda:
+	$(DOCKER) build --build-arg ACCEL=cuda $(FORK_BUILD_ARG) -t $(IMAGE):cuda-$(TAG) .
+
+## Build the fast dev image: CPU base, laya/torch skipped, FakeEngine default.
+build-dev:
+	$(DOCKER) build --build-arg ACCEL=cpu \
+		--build-arg INSTALL_LAYA=0 --build-arg DEFAULT_ENGINE=fake \
+		-t $(IMAGE):dev .

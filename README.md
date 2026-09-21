@@ -38,7 +38,28 @@ See `CONTEXT.md` for the full domain glossary.
 
 ## Development
 
-Developer workflow is driven by a `Makefile` (`make setup`, `lint`, `fmt`, `typecheck`, `test`, `test-slow`, `build-cpu`, `build-cuda`, `docs`, `load-test`, `run`) using `uv` for environments and dependency compilation. Tests run against a deterministic `FakeEngine` in CI (no GPU); the full end-to-end suite drives the real SDK against real Laya checkpoints on GPU-equipped machines. Load tests use [k6](https://k6.io/).
+Developer workflow is driven by a `Makefile` (`make setup`, `lint`, `fmt`, `typecheck`, `test`, `test-slow`, `build-cpu`, `build-cuda`, `build-dev`, `docs`, `load-test`, `run`) using `uv` for environments and dependency compilation. Tests run against a deterministic `FakeEngine` in CI (no GPU); the full end-to-end suite drives the real SDK against real Laya checkpoints on GPU-equipped machines. Load tests use [k6](https://k6.io/).
+
+## Container images
+
+One multi-stage `Dockerfile` is parametrized by an `ACCEL` build arg that selects the base image and torch wheel index (ADR-0001). `cpu` and `cuda` are implemented; `rocm`/`jetson` are documented, unbuilt slots. The builder installs the pinned deps into a uv-managed venv; the final stage copies only that venv (no dev dependencies) and runs as a non-root user.
+
+```bash
+make build-cpu     # trim CPU image (torch+cpu, no CUDA wheels), serves the real Laya engine
+make build-cuda    # CUDA image (builds on CPU-only hosts; running inference needs a GPU)
+make build-dev     # fast image: laya/torch skipped, FakeEngine default — for smoke tests
+
+docker run -p 8000:8000 laya-server:cpu-dev   # then POST /v1/systemone
+```
+
+To build against a **fork of laya** (e.g. to test a patch) instead of the pinned release, pass a `git+…@ref` spec — it installs over the pinned dependency stack:
+
+```bash
+make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
+# or directly:
+docker build --build-arg ACCEL=cpu \
+  --build-arg LAYA_FORK="git+https://github.com/you/laya@my-branch" -t laya-server:cpu .
+```
 
 ## License
 

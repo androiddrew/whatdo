@@ -1,0 +1,16 @@
+# Keep the build context small and deterministic: only pyproject, requirements,
+# README/LICENSE, and src/ are needed (see Dockerfile COPYs).
+.git
+.gitea
+.githooks
+.venv
+**/__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+tests
+docs
+k6
+*.egg-info
+src/*.egg-info
