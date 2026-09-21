@@ -24,6 +24,10 @@ curl -s localhost:8000/healthz   # {"status":"ok"}
 curl -s localhost:8000/readyz    # {"status":"ready"}
 ```
 
+!!! note
+    `/readyz` is `ready` immediately for the default `FakeEngine`. On a real-engine
+    image it returns `503` until the **Checkpoint** finishes loading, then `200`.
+
 ## Drive it with the official SDK
 
 `laya-server` speaks the Jev API, so the official `typesafe-sdk-python` works

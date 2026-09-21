@@ -13,8 +13,15 @@ DOCKER ?= docker
 LAYA_FORK ?=
 FORK_BUILD_ARG := $(if $(LAYA_FORK),--build-arg LAYA_FORK="$(LAYA_FORK)",)
 
+# Load-test knobs (#12). Point BASE_URL at a running deployment; set API_KEY if
+# it runs with auth enabled. Passed through to k6 as environment variables.
+K6 ?= k6
+BASE_URL ?= http://localhost:8000
+API_KEY ?=
+K6_ENV := -e BASE_URL=$(BASE_URL) $(if $(API_KEY),-e API_KEY=$(API_KEY),)
+
 .PHONY: setup compile lint fmt typecheck test test-otel test-slow run \
-	build-cpu build-cuda build-dev docs docs-serve
+	build-cpu build-cuda build-dev docs docs-serve load-test
 
 ## Create the dev virtualenv, install pinned dev deps + the package, install git hooks.
 setup:
@@ -88,3 +95,9 @@ docs:
 ## Serve the docs locally with live reload.
 docs-serve:
 	$(BIN)/mkdocs serve
+
+## Run the k6 load tests against a running deployment (needs k6; not gated in CI).
+## Point at a real-model server: make load-test BASE_URL=... [API_KEY=...]
+load-test:
+	$(K6) run $(K6_ENV) tests/load/smoke.js
+	$(K6) run $(K6_ENV) tests/load/load.js

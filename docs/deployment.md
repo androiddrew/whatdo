@@ -35,12 +35,11 @@ make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
 ## Run
 
 ```bash
-docker run -p 8000:8000 \
-  -e LAYA_MODEL__ENGINE=laya \
-  git.runcible.io/androiddrew/laya-server:latest
+docker run -p 8000:8000 git.runcible.io/androiddrew/laya-server:latest
 ```
 
-The real Laya engine loads a **Checkpoint** at startup; `/readyz` returns
+The images already default to `LAYA_MODEL__ENGINE=laya`, so the real Laya engine
+loads a **Checkpoint** at startup; `/readyz` returns
 `503` until it is loaded and `200` once the deployment is ready to serve. Use
 `/healthz` for liveness (it does not depend on the model).
 

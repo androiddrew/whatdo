@@ -1,58 +1,53 @@
 # Load testing
 
 Load tests use [k6](https://k6.io/) to drive `POST /v1/systemone` against a
-running server and measure throughput and latency under concurrency — including
-how the worker pool sheds load with `529` when its bounded queue saturates.
+running deployment and measure throughput and latency — including how the worker
+pool sheds load with a retryable `529` when its bounded queue saturates.
 
-!!! note "Harness"
-    A bundled k6 script set and a `make load-test` target ship with the
-    load-testing work; the example below runs against any live server today.
+The scripts live in `tests/load/` and each request exercises all three decision
+primitives (a **Noul**, a **Choice**, and a **Score**) in one **System One** call:
 
-## Run a load test
+| Script | Profile | Purpose |
+| ------ | ------- | ------- |
+| `smoke.js` | 1 VU, 10 iterations | Correctness under light load — every request must succeed. |
+| `load.js` | ramping arrival rate (up to 50 req/s) | Throughput/latency under sustained load; a `529` is an accepted, expected response. |
 
-Install k6 (see the [k6 install docs](https://k6.io/docs/get-started/installation/)),
-start a server, then run a script against it:
+Both enforce **thresholds** on p95 latency (`http_req_duration`) and the failure
+rate (`http_req_failed`). In `load.js` a `529` is treated as expected (via a
+response callback) so it does not count as a failure — only genuine errors do.
+
+## Run
+
+Install [k6](https://k6.io/docs/get-started/installation/), start a server, then:
 
 ```bash
-docker run -p 8000:8000 git.runcible.io/androiddrew/laya-server:latest
-k6 run -e BASE_URL=http://localhost:8000 loadtest.js
+make load-test BASE_URL=http://localhost:8000        # both scripts
+make load-test BASE_URL=https://laya.example.com API_KEY=sk-…   # against auth mode
 ```
 
-## Example script
+Or run a single script directly:
 
-```javascript
-import http from "k6/http";
-import { check } from "k6";
-
-const BASE_URL = __ENV.BASE_URL || "http://localhost:8000";
-
-export const options = {
-  // Ramp concurrency to probe throughput and the 529 overload signal.
-  stages: [
-    { duration: "30s", target: 20 },
-    { duration: "1m", target: 50 },
-    { duration: "30s", target: 0 },
-  ],
-};
-
-const payload = JSON.stringify({
-  state: "I was charged twice.",
-  model: "jev-latest",
-  questions: {
-    billing: { type: "noul", instructions: "Is this about billing?" },
-  },
-});
-
-export default function () {
-  const res = http.post(`${BASE_URL}/v1/systemone`, payload, {
-    headers: { "Content-Type": "application/json" },
-  });
-  // 529 is an expected, retryable overload response under saturation.
-  check(res, {
-    "served or shed": (r) => r.status === 200 || r.status === 529,
-  });
-}
+```bash
+k6 run -e BASE_URL=http://localhost:8000 tests/load/smoke.js
 ```
+
+!!! note "Real-model deployment"
+    Run these against a **real-model** deployment (the CUDA image or a
+    GPU host) to get meaningful numbers; the `FakeEngine` is deterministic and
+    sub-millisecond, so it measures the HTTP path, not inference. Load tests are
+    **not** gated in CI.
+
+## Configuration
+
+All knobs are environment variables (defaults in parentheses):
+
+| Variable | Meaning |
+| -------- | ------- |
+| `BASE_URL` | Server under test (`http://localhost:8000`). |
+| `API_KEY` | Bearer token, sent only if set (no-auth mode by default). |
+| `MODEL` | Requested **Model** id (`jev-latest`). |
+| `P95_MS` | p95 `http_req_duration` threshold in ms (`1500`). |
+| `FAIL_RATE` | Max `http_req_failed` rate for `load.js` (`0.01`). |
 
 ## What to watch
 
@@ -61,5 +56,5 @@ export default function () {
 - **`529` rate** rises once the bounded queue (`LAYA_SERVER__QUEUE_MAX`)
   saturates — the deliberate, retryable backpressure signal rather than
   unbounded latency.
-- **Latency** (`http_req_duration`) and the `laya.inference.duration` metric (if
-  [Observability](observability.md) is enabled) should track each other.
+- **Latency** (`http_req_duration`) should track the `laya.inference.duration`
+  metric when [Observability](observability.md) is enabled.
