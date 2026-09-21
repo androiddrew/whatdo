@@ -51,7 +51,7 @@ jobs:
       - run: make test-otel
 
   # Build the cpu and cuda images (ADR-0001). Building needs no GPU; images are
-  # built but not pushed here (publishing is ticket #10).
+  # built but not pushed here — publishing on tags lives in release.yml.
   build-images:
     runs-on: ubuntu-24.04
     strategy:

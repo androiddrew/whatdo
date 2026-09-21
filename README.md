@@ -61,6 +61,30 @@ docker build --build-arg ACCEL=cpu \
   --build-arg LAYA_FORK="git+https://github.com/you/laya@my-branch" -t laya-server:cpu .
 ```
 
+## Releases
+
+Releases are tag-driven (`.gitea/workflows/release.yml`). Pushing a `vX.Y.Z` tag:
+
+1. builds the sdist + wheel (version from setuptools-scm) and publishes them to the Gitea **PyPI registry**;
+2. builds and pushes the **cpu** and **cuda** images to the Gitea **container registry** — each tagged `:{version}-{accel}` and `:{accel}`, and the trim cpu image additionally as `:{version}` and `:latest`;
+3. runs a `verify-install` job that installs `laya-server[otel]` from the registry into a clean environment to prove the published package resolves.
+
+```bash
+git tag v1.2.3 && git push origin v1.2.3    # triggers the release pipeline
+```
+
+To verify a published release manually (the base package comes from the Gitea registry, the `[otel]` deps from PyPI):
+
+```bash
+pip install \
+  --extra-index-url https://git.runcible.io/api/packages/androiddrew/pypi/simple/ \
+  "laya-server[otel]==1.2.3"
+
+docker pull git.runcible.io/androiddrew/laya-server:1.2.3       # or :latest, :cuda
+```
+
+The release job authenticates with the runner's built-in `GITEA_TOKEN`; its user must have package read/write on `androiddrew`.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](./LICENSE). Author: Drew Bednar.

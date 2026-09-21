@@ -14,7 +14,7 @@ LAYA_FORK ?=
 FORK_BUILD_ARG := $(if $(LAYA_FORK),--build-arg LAYA_FORK="$(LAYA_FORK)",)
 
 .PHONY: setup compile lint fmt typecheck test test-otel test-slow run \
-	build-cpu build-cuda build-dev
+	build-cpu build-cuda build-dev dist
 
 ## Create the dev virtualenv, install pinned dev deps + the package, install git hooks.
 setup:
@@ -75,3 +75,8 @@ build-dev:
 	$(DOCKER) build --build-arg ACCEL=cpu \
 		--build-arg INSTALL_LAYA=0 --build-arg DEFAULT_ENGINE=fake \
 		-t $(IMAGE):dev .
+
+## Build the sdist + wheel into dist/ (version derived by setuptools-scm).
+dist:
+	rm -rf dist
+	$(UV) build
