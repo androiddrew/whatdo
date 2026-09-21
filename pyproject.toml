@@ -45,6 +45,12 @@ files = ["src/laya_server"]
 module = ["laya", "laya.*"]
 ignore_missing_imports = true
 
+# OpenTelemetry is the optional `[otel]` extra, imported lazily behind the master
+# toggle; absent in the base install (and CI), so let mypy treat it as untyped.
+[[tool.mypy.overrides]]
+module = ["opentelemetry.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"

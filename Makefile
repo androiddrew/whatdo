@@ -5,7 +5,7 @@ PY_VERSION ?= 3.12
 HOST ?= 127.0.0.1
 PORT ?= 8000
 
-.PHONY: setup compile lint fmt typecheck test test-slow run
+.PHONY: setup compile lint fmt typecheck test test-otel test-slow run
 
 ## Create the dev virtualenv, install pinned dev deps + the package, install git hooks.
 setup:
@@ -38,6 +38,11 @@ typecheck:
 
 ## Fast test suite (excludes GPU/real-model tests).
 test:
+	$(BIN)/pytest -m "not slow"
+
+## Install the [otel] extra, then run the suite so the OTEL-on tests execute.
+test-otel:
+	$(UV) pip install -e '.[otel]'
 	$(BIN)/pytest -m "not slow"
 
 ## Slow suite: real Laya engine on real checkpoints. Requires a GPU; run locally.

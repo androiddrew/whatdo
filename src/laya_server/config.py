@@ -56,7 +56,7 @@ class AuthSettings(BaseModel):
 
 
 class OtelSettings(BaseModel):
-    """Optional OpenTelemetry settings (implemented in a later ticket)."""
+    """Optional OpenTelemetry settings: a master toggle plus per-signal toggles."""
 
     enabled: bool = False
     traces: bool = True

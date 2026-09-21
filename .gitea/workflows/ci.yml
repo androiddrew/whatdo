@@ -36,3 +36,16 @@ jobs:
       - run: uv python install 3.12
       - run: make setup
       - run: make test
+
+  # The OTEL-on tests importorskip when the extra is absent, so run them in a
+  # job that installs laya-server[otel] to actually exercise emission (#8).
+  test-otel:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+      - run: uv python install 3.12
+      - run: make setup
+      - run: make test-otel

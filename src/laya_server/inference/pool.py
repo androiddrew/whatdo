@@ -95,6 +95,10 @@ class WorkerPool:
         with self._lock:
             return self._load_error is None and self._ready == len(self._engines)
 
+    def queue_depth(self) -> int:
+        """Approximate number of requests waiting in the shared queue."""
+        return self._queue.qsize()
+
     def shutdown(self) -> None:
         """Drain pending work and stop every worker thread."""
         # Cancel anything still queued so blocked callers don't wait for a

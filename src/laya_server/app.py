@@ -1,8 +1,8 @@
 """FastAPI application factory and lifespan.
 
-Wires configuration, the inference engine, and the API routers. Auth, model
-resolution, the worker pool, and observability are layered on in later tickets
-via the same factory and lifespan.
+Wires configuration, the worker pool of inference engines, the API routers,
+auth, model resolution, and optional observability — all through this one
+factory and lifespan.
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from laya_server.config import Settings
 from laya_server.inference.base import DecisionEngine
 from laya_server.inference.factory import build_engines
 from laya_server.inference.pool import WorkerPool
+from laya_server.observability import configure_observability, shutdown_observability
 
 
 @asynccontextmanager
@@ -35,19 +36,25 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         await run_in_threadpool(pool.wait_ready)
     except BaseException:
         # A failed load leaves sibling workers blocked on the queue; drain them
-        # rather than leak threads before propagating the startup failure.
+        # (and stop OTEL export threads) rather than leak before propagating.
         await run_in_threadpool(pool.shutdown)
+        await run_in_threadpool(shutdown_observability, app)
         raise
     try:
         yield
     finally:
         await run_in_threadpool(pool.shutdown)
+        # Flush and stop OTEL providers (no-op when observability is off).
+        await run_in_threadpool(shutdown_observability, app)
 
 
 def create_app(
     settings: Settings | None = None,
     engine: DecisionEngine | None = None,
     engines: list[DecisionEngine] | None = None,
+    *,
+    otel_span_exporter: object = None,
+    otel_metric_reader: object = None,
 ) -> FastAPI:
     """Build a configured FastAPI application.
 
@@ -57,6 +64,10 @@ def create_app(
             ``pool_size`` copies selected by settings.
         engine: Convenience for injecting a single-copy pool (tests); ignored
             when ``engines`` is given.
+        otel_span_exporter: In-memory span exporter for tests; production uses an
+            OTLP exporter (see ``configure_observability``).
+        otel_metric_reader: In-memory metric reader for tests; production uses an
+            OTLP periodic reader.
     """
     settings = settings or Settings()
     if engines is None:
@@ -77,6 +88,15 @@ def create_app(
     app.include_router(health.router)
     app.include_router(systemone.router, dependencies=jev_dependencies)
     app.include_router(models.router, dependencies=jev_dependencies)
+
+    # Configure logging + optional OTEL last, so FastAPI instrumentation sees the
+    # final route set. No-op observability when otel is disabled (#8).
+    app.state.telemetry = configure_observability(
+        app,
+        settings,
+        span_exporter=otel_span_exporter,
+        metric_reader=otel_metric_reader,
+    )
 
     return app
 

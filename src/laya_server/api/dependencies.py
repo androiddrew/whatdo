@@ -6,12 +6,19 @@ from fastapi import Request
 
 from laya_server.config import Settings
 from laya_server.inference.pool import WorkerPool
+from laya_server.observability import Telemetry
 
 
 def get_pool(request: Request) -> WorkerPool:
     """The worker pool bound to the app (set in the app factory)."""
     pool: WorkerPool = request.app.state.pool
     return pool
+
+
+def get_telemetry(request: Request) -> Telemetry:
+    """The telemetry facade bound to the app (set in the app factory)."""
+    telemetry: Telemetry = request.app.state.telemetry
+    return telemetry
 
 
 def get_settings(request: Request) -> Settings:
