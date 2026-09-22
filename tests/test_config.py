@@ -14,8 +14,8 @@ def test_settings_have_sensible_defaults() -> None:
 
 
 def test_settings_read_nested_env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LAYA_SERVER__PORT", "9001")
-    monkeypatch.setenv("LAYA_AUTH__ENABLED", "true")
+    monkeypatch.setenv("WHATDO_SERVER__PORT", "9001")
+    monkeypatch.setenv("WHATDO_AUTH__ENABLED", "true")
 
     settings = Settings()
 

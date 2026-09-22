@@ -38,7 +38,7 @@ make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
 docker run -p 8000:8000 androiddrew/whatdo:latest
 ```
 
-The images already default to `LAYA_MODEL__ENGINE=laya`, so the real Laya engine
+The images already default to `WHATDO_MODEL__ENGINE=laya`, so the real Laya engine
 loads a **Checkpoint** at startup; `/readyz` returns
 `503` until it is loaded and `200` once the deployment is ready to serve. Use
 `/healthz` for liveness (it does not depend on the model).
@@ -55,7 +55,7 @@ docker run --gpus all -p 8000:8000 \
 
 ## Configuration & probes
 
-- Configure via `LAYA_`-prefixed environment variables — see
+- Configure via `WHATDO_`-prefixed environment variables — see
   [Configuration](configuration.md).
 - **Liveness:** `GET /healthz` → `200 {"status":"ok"}` while the process is up.
 - **Readiness:** `GET /readyz` → `200 {"status":"ready"}` once every engine copy

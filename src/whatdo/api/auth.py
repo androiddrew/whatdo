@@ -1,6 +1,6 @@
 """Bearer-token authentication for the Jev API.
 
-Two postures (ticket #6): when ``LAYA_AUTH__ENABLED`` is false the dependency is
+Two postures (ticket #6): when ``WHATDO_AUTH__ENABLED`` is false the dependency is
 never applied — the app factory simply omits it, so requests are accepted with
 no ``Authorization`` header. When enabled, the ``Authorization: Bearer <token>``
 header is validated in constant time against the configured ``api_keys``; a

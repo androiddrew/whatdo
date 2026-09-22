@@ -1,7 +1,7 @@
 """Application configuration via Pydantic settings.
 
-All settings are read from ``LAYA_``-prefixed environment variables, with nested
-groups addressed using a ``__`` delimiter (e.g. ``LAYA_SERVER__PORT=9000``).
+All settings are read from ``WHATDO_``-prefixed environment variables, with nested
+groups addressed using a ``__`` delimiter (e.g. ``WHATDO_SERVER__PORT=9000``).
 
 Only a subset of these fields is consumed today; the full shape is established
 here so later tickets (inference, auth, observability) can wire into it without
@@ -77,7 +77,7 @@ class Settings(BaseSettings):
     """Top-level application settings, grouped by concern."""
 
     model_config = SettingsConfigDict(
-        env_prefix="LAYA_",
+        env_prefix="WHATDO_",
         env_nested_delimiter="__",
         # `model` is a legitimate group name here; opt out of pydantic's
         # protected `model_` namespace so it doesn't warn.

@@ -1,16 +1,16 @@
 # Configuration
 
 All configuration is read from environment variables via Pydantic settings.
-Every variable is `LAYA_`-prefixed, and nested groups are addressed with a `__`
+Every variable is `WHATDO_`-prefixed, and nested groups are addressed with a `__`
 (double-underscore) delimiter.
 
 ```bash
-LAYA_SERVER__PORT=9000              # server.port
-LAYA_MODEL__ENGINE=laya             # model.engine
-LAYA_MODEL__SERVED_MODEL=auto       # model.served_model
-LAYA_AUTH__ENABLED=true             # auth.enabled
-LAYA_AUTH__API_KEYS='["k1","k2"]'   # auth.api_keys (JSON list)
-LAYA_OTEL__ENABLED=true             # otel.enabled
+WHATDO_SERVER__PORT=9000              # server.port
+WHATDO_MODEL__ENGINE=laya             # model.engine
+WHATDO_MODEL__SERVED_MODEL=auto       # model.served_model
+WHATDO_AUTH__ENABLED=true             # auth.enabled
+WHATDO_AUTH__API_KEYS='["k1","k2"]'   # auth.api_keys (JSON list)
+WHATDO_OTEL__ENABLED=true             # otel.enabled
 ```
 
 ## Groups at a glance
@@ -24,7 +24,7 @@ LAYA_OTEL__ENABLED=true             # otel.enabled
 | `logging` | Log level and JSON-vs-plain formatting. |
 
 !!! tip "Engine selection"
-    `LAYA_MODEL__ENGINE` chooses the backend: `fake` (default) is the
+    `WHATDO_MODEL__ENGINE` chooses the backend: `fake` (default) is the
     deterministic, GPU-free **FakeEngine** used for local dev and CI; `laya`
     runs the real **Laya** engine and needs the `whatdo[laya]` extra and,
     ideally, a GPU. The container images default to `laya`.

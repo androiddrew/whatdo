@@ -21,7 +21,7 @@ def test_defaults_to_fake_engine() -> None:
 def test_selects_laya_engine_without_importing_laya(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("LAYA_MODEL__ENGINE", "laya")
+    monkeypatch.setenv("WHATDO_MODEL__ENGINE", "laya")
     engine = build_engine(Settings())
     assert isinstance(engine, LayaEngine)
     # Constructed but not loaded: no laya/torch import happened.

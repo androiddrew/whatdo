@@ -101,9 +101,9 @@ ARG DEFAULT_ENGINE=laya
 ENV PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    LAYA_MODEL__ENGINE=${DEFAULT_ENGINE} \
-    LAYA_SERVER__HOST=0.0.0.0 \
-    LAYA_SERVER__PORT=8000
+    WHATDO_MODEL__ENGINE=${DEFAULT_ENGINE} \
+    WHATDO_SERVER__HOST=0.0.0.0 \
+    WHATDO_SERVER__PORT=8000
 
 COPY --from=builder /opt/python /opt/python
 COPY --from=builder /opt/venv /opt/venv

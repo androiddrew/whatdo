@@ -7,12 +7,12 @@ Enable it with the master toggle, and control each signal independently.
 ```bash
 pip install "whatdo[otel]"
 
-LAYA_OTEL__ENABLED=true
-LAYA_OTEL__TRACES=true
-LAYA_OTEL__METRICS=true
-LAYA_OTEL__LOGS=true
-LAYA_OTEL__ENDPOINT=http://otel-collector:4317   # OTLP endpoint
-LAYA_OTEL__SERVICE_NAME=whatdo
+WHATDO_OTEL__ENABLED=true
+WHATDO_OTEL__TRACES=true
+WHATDO_OTEL__METRICS=true
+WHATDO_OTEL__LOGS=true
+WHATDO_OTEL__ENDPOINT=http://otel-collector:4317   # OTLP endpoint
+WHATDO_OTEL__SERVICE_NAME=whatdo
 ```
 
 When disabled, the request path records into a no-op telemetry facade — it costs

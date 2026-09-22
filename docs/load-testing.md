@@ -51,9 +51,9 @@ All knobs are environment variables (defaults in parentheses):
 
 ## What to watch
 
-- **Throughput** scales with `LAYA_SERVER__POOL_SIZE` (engine copies) up to the
+- **Throughput** scales with `WHATDO_SERVER__POOL_SIZE` (engine copies) up to the
   host's resources.
-- **`529` rate** rises once the bounded queue (`LAYA_SERVER__QUEUE_MAX`)
+- **`529` rate** rises once the bounded queue (`WHATDO_SERVER__QUEUE_MAX`)
   saturates — the deliberate, retryable backpressure signal rather than
   unbounded latency.
 - **Latency** (`http_req_duration`) should track the `laya.inference.duration`

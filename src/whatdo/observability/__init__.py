@@ -1,7 +1,7 @@
 """Optional OpenTelemetry observability (ticket #8, ADR-0005).
 
 Guarded imports keep OTEL out of the base install; ``whatdo[otel]`` pulls
-in the libraries. Everything is off unless ``LAYA_OTEL__ENABLED`` is set.
+in the libraries. Everything is off unless ``WHATDO_OTEL__ENABLED`` is set.
 """
 
 from __future__ import annotations

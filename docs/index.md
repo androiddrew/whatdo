@@ -44,7 +44,7 @@ levels — is its **Criteria**.
 ## Where to next
 
 - [Quickstart](quickstart.md) — run the server and drive it with the official SDK.
-- [Configuration](configuration.md) — every `LAYA_` setting.
+- [Configuration](configuration.md) — every `WHATDO_` setting.
 - [Jev / System One contract](contract.md) — the request/response wire shape.
 - [Deployment](deployment.md) — the CPU and CUDA container images.
 - [Observability](observability.md) — optional OpenTelemetry.

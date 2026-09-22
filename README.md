@@ -41,7 +41,7 @@ See `CONTEXT.md` for the full domain glossary.
 - **Configurable inference** — one served model per deployment, a thread-based worker pool of model copies fed by a bounded queue, and a retryable `529` on overload.
 - **Optional OpenTelemetry** — logs, traces, and metrics via OTLP, shipped as the `whatdo[otel]` extra (no OTEL libs required for the base install).
 - **Production packaging** — an `ACCEL`-parametrized multi-stage Dockerfile (CPU + CUDA now; ROCm + Jetson planned), managed with `uv` and pinned requirements files.
-- **Configuration** via Pydantic settings (`LAYA_`-prefixed environment variables).
+- **Configuration** via Pydantic settings (`WHATDO_`-prefixed environment variables).
 
 ## Documentation & decisions
 
