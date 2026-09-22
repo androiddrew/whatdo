@@ -1,6 +1,6 @@
-# Documentation tooling for the `laya-server` MKDocs site (ticket #11).
+# Documentation tooling for the `whatdo` MKDocs site (ticket #11).
 # Not part of the base/dev install; the CI docs job installs these on top of the
-# package so mkdocstrings can import laya_server. Compile to docs-requirements.txt
+# package so mkdocstrings can import whatdo. Compile to docs-requirements.txt
 # with `make compile`.
 mkdocs-material
 mkdocstrings[python]

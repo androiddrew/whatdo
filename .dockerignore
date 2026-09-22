@@ -1,7 +1,7 @@
 # Keep the build context small and deterministic: only pyproject, requirements,
 # README/LICENSE, and src/ are needed (see Dockerfile COPYs).
 .git
-.gitea
+.github
 .githooks
 .venv
 **/__pycache__

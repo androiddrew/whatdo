@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from laya_server.schemas.jev import (
+from whatdo.schemas.jev import (
     Answer,
     ChoiceAnswer,
     ChoiceQuestion,

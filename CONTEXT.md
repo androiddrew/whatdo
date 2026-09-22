@@ -1,4 +1,4 @@
-# laya-server
+# whatdo
 
 A FastAPI service that implements TypeSafe's Jev API contract over the local Laya decision engine, so the official `typesafe-sdk-python` can drive locally-served, non-autoregressive typed decisions.
 

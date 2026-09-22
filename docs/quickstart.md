@@ -6,7 +6,7 @@ The fastest way to a running server is the container image (see
 [Deployment](deployment.md) for the full matrix):
 
 ```bash
-docker run -p 8000:8000 git.runcible.io/androiddrew/laya-server:latest
+docker run -p 8000:8000 androiddrew/whatdo:latest
 ```
 
 Or run from a checkout for local development (uses the deterministic
@@ -30,7 +30,7 @@ curl -s localhost:8000/readyz    # {"status":"ready"}
 
 ## Drive it with the official SDK
 
-`laya-server` speaks the Jev API, so the official `typesafe-sdk-python` works
+`whatdo` speaks the Jev API, so the official `typesafe-sdk-python` works
 against it unchanged — just point it at your deployment:
 
 ```bash

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from laya_server.app import create_app
+from whatdo.app import create_app
 
 
 def _client() -> TestClient:

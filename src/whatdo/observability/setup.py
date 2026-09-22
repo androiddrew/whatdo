@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from laya_server.config import Settings
-from laya_server.observability.log import configure_logging
-from laya_server.observability.telemetry import Telemetry
+from whatdo.config import Settings
+from whatdo.observability.log import configure_logging
+from whatdo.observability.telemetry import Telemetry
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -74,7 +74,7 @@ def _configure_traces(
     FastAPIInstrumentor.instrument_app(app, tracer_provider=provider)
     # Held on the app so the provider (and its processor) outlives this call.
     app.state.otel_tracer_provider = provider
-    return provider.get_tracer("laya_server")
+    return provider.get_tracer("whatdo")
 
 
 def _configure_metrics(
@@ -89,7 +89,7 @@ def _configure_metrics(
         metric_reader if metric_reader is not None else _otlp_metric_reader(settings)
     )
     provider = MeterProvider(resource=resource, metric_readers=[reader])
-    meter = provider.get_meter("laya_server")
+    meter = provider.get_meter("whatdo")
 
     pool = app.state.pool
 

@@ -17,11 +17,11 @@ import uvicorn
 from fastapi import FastAPI
 from typesafe_sdk import TypeSafeClient
 
-from laya_server.app import create_app
-from laya_server.config import AuthSettings, Settings
-from laya_server.inference.base import PredictResult
-from laya_server.inference.fake import FakeEngine
-from laya_server.schemas.jev import JSONContent, NoulAnswer, Question
+from whatdo.app import create_app
+from whatdo.config import AuthSettings, Settings
+from whatdo.inference.base import PredictResult
+from whatdo.inference.fake import FakeEngine
+from whatdo.schemas.jev import JSONContent, NoulAnswer, Question
 
 # The single key the auth-enabled contract fixtures accept.
 AUTH_API_KEY = "contract-test-key"

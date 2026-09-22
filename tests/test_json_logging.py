@@ -11,12 +11,12 @@ import logging
 
 import pytest
 
-from laya_server.observability.log import JsonFormatter
+from whatdo.observability.log import JsonFormatter
 
 
 def _record(message: str = "hello") -> logging.LogRecord:
     return logging.LogRecord(
-        name="laya_server.test",
+        name="whatdo.test",
         level=logging.INFO,
         pathname=__file__,
         lineno=1,
@@ -29,7 +29,7 @@ def _record(message: str = "hello") -> logging.LogRecord:
 def test_json_formatter_emits_structured_fields() -> None:
     payload = json.loads(JsonFormatter().format(_record("boom")))
     assert payload["level"] == "INFO"
-    assert payload["logger"] == "laya_server.test"
+    assert payload["logger"] == "whatdo.test"
     assert payload["message"] == "boom"
     assert "trace_id" not in payload  # no provider => no correlation
 
@@ -47,7 +47,7 @@ def test_trace_context_provider_reads_the_active_span() -> None:
     pytest.importorskip("opentelemetry.sdk")
     from opentelemetry.sdk.trace import TracerProvider
 
-    from laya_server.observability.setup import _trace_context_provider
+    from whatdo.observability.setup import _trace_context_provider
 
     provider = _trace_context_provider()
     # No active span yet.

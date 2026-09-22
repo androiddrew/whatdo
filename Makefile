@@ -7,7 +7,7 @@ PORT ?= 8000
 
 # Image build knobs (ADR-0001). IMAGE/TAG name the image; LAYA_FORK, when set to
 # a `git+…@ref` spec, installs laya from a fork instead of the pinned release.
-IMAGE ?= laya-server
+IMAGE ?= whatdo
 TAG ?= dev
 DOCKER ?= docker
 LAYA_FORK ?=
@@ -68,7 +68,7 @@ test-slow:
 
 ## Run the app locally with autoreload.
 run:
-	$(BIN)/uvicorn laya_server.app:app --host $(HOST) --port $(PORT) --reload
+	$(BIN)/uvicorn whatdo.app:app --host $(HOST) --port $(PORT) --reload
 
 ## Build the trim CPU image. Pass LAYA_FORK=git+<url>@<ref> to use a laya fork.
 build-cpu:

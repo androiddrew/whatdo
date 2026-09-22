@@ -174,8 +174,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Gitea / tea credentials (tea config lives in ~/.config/tea; guard local token files)
-.tea/
-.gitea-token
-*.gitea-token
+# Local credential files (gh stores its token in ~/.config/gh, not the repo)
+*.token
 

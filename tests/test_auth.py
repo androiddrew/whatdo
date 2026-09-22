@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from laya_server.app import create_app
-from laya_server.config import AuthSettings, Settings
+from whatdo.app import create_app
+from whatdo.config import AuthSettings, Settings
 
 _VALID_KEY = "s3cret-key"
 _OTHER_KEY = "second-key"

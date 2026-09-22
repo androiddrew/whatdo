@@ -3,7 +3,7 @@ requires = ["setuptools>=77", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "laya-server"
+name = "whatdo"
 description = "A Typesafe-compatible Jev API server backed by the Laya decision engine"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -14,7 +14,7 @@ authors = [{ name = "Drew Bednar" }]
 dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
-Homepage = "https://git.runcible.io/androiddrew/laya-server"
+Homepage = "https://github.com/androiddrew/whatdo"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -38,7 +38,7 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4"]
 python_version = "3.12"
 strict = true
 mypy_path = "src"
-files = ["src/laya_server"]
+files = ["src/whatdo"]
 
 # `laya` is an optional extra imported lazily and ships no type stubs.
 [[tool.mypy.overrides]]

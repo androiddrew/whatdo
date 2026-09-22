@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from laya_server.config import ModelSettings, Settings
-from laya_server.inference.base import DecisionEngine
-from laya_server.inference.fake import FakeEngine
-from laya_server.inference.laya_engine import LayaEngine
+from whatdo.config import ModelSettings, Settings
+from whatdo.inference.base import DecisionEngine
+from whatdo.inference.fake import FakeEngine
+from whatdo.inference.laya_engine import LayaEngine
 
 
 def build_engine(settings: Settings, device: str | None = None) -> DecisionEngine:

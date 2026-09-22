@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from laya_server.config import ModelSettings
-from laya_server.resolution import ModelNotServedError, accepted_models, resolve_model
+from whatdo.config import ModelSettings
+from whatdo.resolution import ModelNotServedError, accepted_models, resolve_model
 
 
 def test_shim_maps_jev_aliases_to_served_model() -> None:

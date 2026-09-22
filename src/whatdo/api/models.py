@@ -6,10 +6,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from laya_server.api.dependencies import get_settings
-from laya_server.config import Settings
-from laya_server.resolution import accepted_models
-from laya_server.schemas.jev import ModelMetadata, ModelsResponse
+from whatdo.api.dependencies import get_settings
+from whatdo.config import Settings
+from whatdo.resolution import accepted_models
+from whatdo.schemas.jev import ModelMetadata, ModelsResponse
 
 router = APIRouter(prefix="/v1", tags=["models"])
 

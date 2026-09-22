@@ -2,7 +2,7 @@
 
 A **System One** call evaluates one **State** against a set of **Questions** in a
 single forward pass and returns one **Answer** per Question. The wire contract is
-TypeSafe's Jev API; this page describes the shape `laya-server` implements.
+TypeSafe's Jev API; this page describes the shape `whatdo` implements.
 
 ## Request — `POST /v1/systemone`
 
@@ -87,8 +87,8 @@ reads):
 The request/response models are generated from the server's own Pydantic
 schemas.
 
-::: laya_server.schemas.jev.SystemOneRequest
+::: whatdo.schemas.jev.SystemOneRequest
 
-::: laya_server.schemas.jev.SystemOneResponse
+::: whatdo.schemas.jev.SystemOneResponse
 
-::: laya_server.schemas.jev.Usage
+::: whatdo.schemas.jev.Usage

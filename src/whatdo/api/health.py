@@ -6,8 +6,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
 
-from laya_server.api.dependencies import get_pool
-from laya_server.inference.pool import WorkerPool
+from whatdo.api.dependencies import get_pool
+from whatdo.inference.pool import WorkerPool
 
 router = APIRouter(tags=["health"])
 

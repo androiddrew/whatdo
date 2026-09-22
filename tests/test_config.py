@@ -1,6 +1,6 @@
 import pytest
 
-from laya_server.config import Settings
+from whatdo.config import Settings
 
 
 def test_settings_have_sensible_defaults() -> None:

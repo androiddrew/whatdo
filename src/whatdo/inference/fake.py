@@ -12,8 +12,8 @@ import json
 import random
 from collections.abc import Sequence
 
-from laya_server.inference.base import PredictResult
-from laya_server.schemas.jev import (
+from whatdo.inference.base import PredictResult
+from whatdo.schemas.jev import (
     Answer,
     ChoiceAnswer,
     ChoiceQuestion,

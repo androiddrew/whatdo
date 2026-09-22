@@ -47,14 +47,14 @@ def configure_logging(
     json_logs: bool,
     trace_context: TraceContextProvider | None = None,
 ) -> None:
-    """Install a single handler on the ``laya_server`` logger (idempotent).
+    """Install a single handler on the ``whatdo`` logger (idempotent).
 
     Uses a dedicated logger (not root) so repeated app builds in tests don't
     stack handlers and pytest's own logging is left alone. This mutates a
     process-global logger, so building two apps with different logging settings
     in one process is last-writer-wins — fine for the single-app deployment.
     """
-    logger = logging.getLogger("laya_server")
+    logger = logging.getLogger("whatdo")
     logger.setLevel(level.upper())
     logger.propagate = False
 

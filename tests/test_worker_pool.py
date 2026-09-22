@@ -12,10 +12,10 @@ from collections.abc import Sequence
 
 import pytest
 
-from laya_server.inference.fake import FakeEngine
-from laya_server.inference.pool import PoolOverloadError, PoolTimeoutError, WorkerPool
-from laya_server.schemas.jev import Question
 from tests.conftest import BlockingEngine
+from whatdo.inference.fake import FakeEngine
+from whatdo.inference.pool import PoolOverloadError, PoolTimeoutError, WorkerPool
+from whatdo.schemas.jev import Question
 
 _QUESTIONS: dict[str, Question] = {}
 
@@ -147,6 +147,6 @@ def test_copies_run_in_parallel() -> None:
 
 
 def _noul() -> Question:
-    from laya_server.schemas.jev import NoulQuestion
+    from whatdo.schemas.jev import NoulQuestion
 
     return NoulQuestion(instructions="billing?")

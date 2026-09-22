@@ -1,10 +1,10 @@
-# laya-server
+# whatdo
 
 A Typesafe-compatible API backed by the [Laya](https://github.com/NandhaKishorM/laya) non-autoregressive System 1 decision engine.
 
-`laya-server` implements the **Jev API** wire contract (`POST /v1/systemone`) over the local Laya engine, so the official [`typesafe-sdk-python`](https://github.com/typesafe-ai/typesafe-sdk-python) works against a self-hosted deployment unchanged — point it at your server with `TYPESAFE_BASE_URL` and your existing `client.system_one(...)` code runs locally.
+`whatdo` implements the **Jev API** wire contract (`POST /v1/systemone`) over the local Laya engine, so the official [`typesafe-sdk-python`](https://github.com/typesafe-ai/typesafe-sdk-python) works against a self-hosted deployment unchanged — point it at your server with `TYPESAFE_BASE_URL` and your existing `client.system_one(...)` code runs locally.
 
-> **Status:** design complete, pre-implementation. The design is captured in `CONTEXT.md` and `docs/adr/`; the implementation is tracked as issues on the [Gitea project](https://git.runcible.io/androiddrew/laya-server/issues).
+> **Status:** design complete, pre-implementation. The design is captured in `CONTEXT.md` and `docs/adr/`; the implementation is tracked as issues on the [GitHub project](https://github.com/androiddrew/whatdo/issues).
 
 ## What it does
 
@@ -39,7 +39,7 @@ See `CONTEXT.md` for the full domain glossary.
 - **Drop-in Jev API** — `POST /v1/systemone` plus `GET /v1/models`, `/healthz`, `/readyz`.
 - **Auth or no-auth** — bearer-token auth against configured API keys, or open for trusted networks.
 - **Configurable inference** — one served model per deployment, a thread-based worker pool of model copies fed by a bounded queue, and a retryable `529` on overload.
-- **Optional OpenTelemetry** — logs, traces, and metrics via OTLP, shipped as the `laya-server[otel]` extra (no OTEL libs required for the base install).
+- **Optional OpenTelemetry** — logs, traces, and metrics via OTLP, shipped as the `whatdo[otel]` extra (no OTEL libs required for the base install).
 - **Production packaging** — an `ACCEL`-parametrized multi-stage Dockerfile (CPU + CUDA now; ROCm + Jetson planned), managed with `uv` and pinned requirements files.
 - **Configuration** via Pydantic settings (`LAYA_`-prefixed environment variables).
 
@@ -67,7 +67,7 @@ make build-cpu     # trim CPU image (torch+cpu, no CUDA wheels), serves the real
 make build-cuda    # CUDA image (builds on CPU-only hosts; running inference needs a GPU)
 make build-dev     # fast image: laya/torch skipped, FakeEngine default — for smoke tests
 
-docker run -p 8000:8000 laya-server:cpu-dev   # then POST /v1/systemone
+docker run -p 8000:8000 whatdo:cpu-dev   # then POST /v1/systemone
 ```
 
 To build against a **fork of laya** (e.g. to test a patch) instead of the pinned release, pass a `git+…@ref` spec — it installs over the pinned dependency stack:
@@ -76,32 +76,24 @@ To build against a **fork of laya** (e.g. to test a patch) instead of the pinned
 make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
 # or directly:
 docker build --build-arg ACCEL=cpu \
-  --build-arg LAYA_FORK="git+https://github.com/you/laya@my-branch" -t laya-server:cpu .
+  --build-arg LAYA_FORK="git+https://github.com/you/laya@my-branch" -t whatdo:cpu .
 ```
 
 ## Releases
 
-Releases are tag-driven (`.gitea/workflows/release.yml`). Pushing a `vX.Y.Z` tag:
-
-1. builds the sdist + wheel (version from setuptools-scm) and publishes them to the Gitea **PyPI registry**;
-2. builds and pushes the **cpu** and **cuda** images to the Gitea **container registry** — each tagged `:{version}-{accel}` and `:{accel}`, and the trim cpu image additionally as `:{version}` and `:latest`;
-3. runs a `verify-install` job that installs `laya-server[otel]` from the registry into a clean environment to prove the published package resolves.
+Releases are tag-driven (`.github/workflows/release.yml`). Pushing a `vX.Y.Z` tag builds and pushes the **cpu** and **cuda** images to **Docker Hub** (`androiddrew/whatdo`) — each tagged `:{version}-{accel}` and `:{accel}`, and the trim cpu image additionally as `:{version}` and `:latest`.
 
 ```bash
 git tag v1.2.3 && git push origin v1.2.3    # triggers the release pipeline
 ```
 
-To verify a published release manually (the base package comes from the Gitea registry, the `[otel]` deps from PyPI):
+Pull a published image:
 
 ```bash
-pip install \
-  --extra-index-url https://git.runcible.io/api/packages/androiddrew/pypi/simple/ \
-  "laya-server[otel]==1.2.3"
-
-docker pull git.runcible.io/androiddrew/laya-server:1.2.3       # or :latest, :cuda
+docker pull androiddrew/whatdo:1.2.3       # or :latest, :cuda
 ```
 
-The release job authenticates with the runner's built-in `GITEA_TOKEN`; its user must have package read/write on `androiddrew`.
+The release job authenticates with the `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN` repository secrets (a Docker Hub access token with read/write on the `androiddrew` namespace).
 
 ## License
 

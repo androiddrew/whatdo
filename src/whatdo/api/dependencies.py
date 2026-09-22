@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from fastapi import Request
 
-from laya_server.config import Settings
-from laya_server.inference.pool import WorkerPool
-from laya_server.observability import Telemetry
+from whatdo.config import Settings
+from whatdo.inference.pool import WorkerPool
+from whatdo.observability import Telemetry
 
 
 def get_pool(request: Request) -> WorkerPool:

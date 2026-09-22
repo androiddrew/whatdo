@@ -1,8 +1,8 @@
-site_name: laya-server
+site_name: whatdo
 site_description: >-
   A Typesafe-compatible Jev API server backed by the Laya non-autoregressive
   decision engine.
-repo_url: https://git.runcible.io/androiddrew/laya-server
+repo_url: https://github.com/androiddrew/whatdo
 docs_dir: docs
 
 theme:

@@ -1,6 +1,6 @@
 # Deployment
 
-`laya-server` ships as one multi-stage `Dockerfile` parametrized by an `ACCEL`
+`whatdo` ships as one multi-stage `Dockerfile` parametrized by an `ACCEL`
 build arg that selects the base image and torch wheel index. `cpu` and `cuda`
 are implemented; `rocm` and `jetson` exist as documented, unbuilt slots.
 
@@ -35,7 +35,7 @@ make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
 ## Run
 
 ```bash
-docker run -p 8000:8000 git.runcible.io/androiddrew/laya-server:latest
+docker run -p 8000:8000 androiddrew/whatdo:latest
 ```
 
 The images already default to `LAYA_MODEL__ENGINE=laya`, so the real Laya engine
@@ -50,7 +50,7 @@ GPU:
 
 ```bash
 docker run --gpus all -p 8000:8000 \
-  git.runcible.io/androiddrew/laya-server:cuda
+  androiddrew/whatdo:cuda
 ```
 
 ## Configuration & probes

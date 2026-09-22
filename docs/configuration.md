@@ -26,21 +26,21 @@ LAYA_OTEL__ENABLED=true             # otel.enabled
 !!! tip "Engine selection"
     `LAYA_MODEL__ENGINE` chooses the backend: `fake` (default) is the
     deterministic, GPU-free **FakeEngine** used for local dev and CI; `laya`
-    runs the real **Laya** engine and needs the `laya-server[laya]` extra and,
+    runs the real **Laya** engine and needs the `whatdo[laya]` extra and,
     ideally, a GPU. The container images default to `laya`.
 
 ## Settings reference
 
 The fields, types, and defaults below are generated from the settings models.
 
-::: laya_server.config.Settings
+::: whatdo.config.Settings
 
-::: laya_server.config.ServerSettings
+::: whatdo.config.ServerSettings
 
-::: laya_server.config.ModelSettings
+::: whatdo.config.ModelSettings
 
-::: laya_server.config.AuthSettings
+::: whatdo.config.AuthSettings
 
-::: laya_server.config.OtelSettings
+::: whatdo.config.OtelSettings
 
-::: laya_server.config.LoggingSettings
+::: whatdo.config.LoggingSettings

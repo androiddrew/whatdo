@@ -4,8 +4,8 @@
 # base image (below) and the torch wheel index (in the builder). `cpu` and `cuda`
 # are built in CI; `rocm` and `jetson` are documented, unbuilt slots.
 #
-#   docker build --build-arg ACCEL=cpu  -t laya-server:cpu  .
-#   docker build --build-arg ACCEL=cuda -t laya-server:cuda .
+#   docker build --build-arg ACCEL=cpu  -t whatdo:cpu  .
+#   docker build --build-arg ACCEL=cuda -t whatdo:cuda .
 #
 # Install laya from a fork instead of the pinned release (e.g. to test a patch):
 #   docker build --build-arg LAYA_FORK="git+https://github.com/you/laya@my-branch" .
@@ -117,4 +117,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
     CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"]
 
-CMD ["uvicorn", "laya_server.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "whatdo.app:app", "--host", "0.0.0.0", "--port", "8000"]

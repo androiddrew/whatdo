@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from laya_server.app import create_app
+from whatdo.app import create_app
 
 
 def test_healthz_returns_ok() -> None:

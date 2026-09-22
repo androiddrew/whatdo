@@ -8,10 +8,10 @@ from contextlib import contextmanager
 import pytest
 from typesafe_sdk import Noul, TypeSafeClient, TypeSafeUnprocessableEntityError
 
-from laya_server.app import create_app
-from laya_server.config import ModelSettings, Settings
-from laya_server.inference.fake import FakeEngine
 from tests.conftest import serve
+from whatdo.app import create_app
+from whatdo.config import ModelSettings, Settings
+from whatdo.inference.fake import FakeEngine
 
 _QUESTIONS = {"billing": Noul(instructions="Is this about billing?")}
 

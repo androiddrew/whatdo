@@ -15,7 +15,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from laya_server.inference.laya_engine import DEFAULT_CHECKPOINT
+from whatdo.inference.laya_engine import DEFAULT_CHECKPOINT
 
 
 class ServerSettings(BaseModel):
@@ -63,7 +63,7 @@ class OtelSettings(BaseModel):
     metrics: bool = True
     logs: bool = True
     endpoint: str | None = None
-    service_name: str = "laya-server"
+    service_name: str = "whatdo"
 
 
 class LoggingSettings(BaseModel):

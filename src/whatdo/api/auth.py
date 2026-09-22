@@ -17,8 +17,8 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
 
-from laya_server.api.dependencies import get_settings
-from laya_server.config import Settings
+from whatdo.api.dependencies import get_settings
+from whatdo.config import Settings
 
 _BEARER_PREFIX = "Bearer "
 

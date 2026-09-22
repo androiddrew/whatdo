@@ -13,13 +13,13 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 from fastapi.concurrency import run_in_threadpool
 
-from laya_server.api import health, models, systemone
-from laya_server.api.auth import require_api_key
-from laya_server.config import Settings
-from laya_server.inference.base import DecisionEngine
-from laya_server.inference.factory import build_engines
-from laya_server.inference.pool import WorkerPool
-from laya_server.observability import configure_observability, shutdown_observability
+from whatdo.api import health, models, systemone
+from whatdo.api.auth import require_api_key
+from whatdo.config import Settings
+from whatdo.inference.base import DecisionEngine
+from whatdo.inference.factory import build_engines
+from whatdo.inference.pool import WorkerPool
+from whatdo.observability import configure_observability, shutdown_observability
 
 
 @asynccontextmanager
@@ -78,7 +78,7 @@ def create_app(
         request_timeout=settings.server.request_timeout,
     )
 
-    app = FastAPI(title="laya-server", lifespan=lifespan)
+    app = FastAPI(title="whatdo", lifespan=lifespan)
     app.state.settings = settings
     app.state.pool = pool
 

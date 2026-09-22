@@ -17,8 +17,8 @@ from collections.abc import Iterator
 import pytest
 from typesafe_sdk import Choice, Noul, Score, TypeSafeClient
 
-from laya_server.app import create_app
 from tests.conftest import serve
+from whatdo.app import create_app
 
 pytestmark = pytest.mark.slow
 
@@ -30,7 +30,7 @@ def real_laya_client() -> Iterator[TypeSafeClient]:
     Module-scoped so the checkpoint loads once for all three primitive tests.
     """
     pytest.importorskip("laya")
-    from laya_server.inference.laya_engine import LayaEngine
+    from whatdo.inference.laya_engine import LayaEngine
 
     app = create_app(engine=LayaEngine())
     # A cold checkpoint load can be slow; give startup a generous window.

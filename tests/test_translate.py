@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from laya_server.inference.translate import to_jev_answer, to_laya_question
-from laya_server.schemas.jev import (
+from whatdo.inference.translate import to_jev_answer, to_laya_question
+from whatdo.schemas.jev import (
     ChoiceAnswer,
     ChoiceQuestion,
     NoulAnswer,

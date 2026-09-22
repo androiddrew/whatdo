@@ -38,7 +38,7 @@ jobs:
       - run: make test
 
   # The OTEL-on tests importorskip when the extra is absent, so run them in a
-  # job that installs laya-server[otel] to actually exercise emission (#8).
+  # job that installs whatdo[otel] to actually exercise emission (#8).
   test-otel:
     runs-on: ubuntu-24.04
     steps:
@@ -68,10 +68,10 @@ jobs:
           build-args: |
             ACCEL=${{ matrix.accel }}
           push: false
-          tags: laya-server:${{ matrix.accel }}
+          tags: whatdo:${{ matrix.accel }}
 
   # Build the MKDocs site with --strict (no publish/hosting for now, #11).
-  # Installs the package so mkdocstrings can import laya_server, plus the docs
+  # Installs the package so mkdocstrings can import whatdo, plus the docs
   # tooling from docs-requirements.txt.
   docs:
     runs-on: ubuntu-24.04

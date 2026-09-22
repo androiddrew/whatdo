@@ -7,12 +7,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from laya_server.api.dependencies import get_pool, get_settings, get_telemetry
-from laya_server.config import Settings
-from laya_server.inference.pool import PoolOverloadError, PoolTimeoutError, WorkerPool
-from laya_server.observability import Telemetry
-from laya_server.resolution import ModelNotServedError, resolve_model
-from laya_server.schemas.jev import SystemOneRequest, SystemOneResponse, Usage
+from whatdo.api.dependencies import get_pool, get_settings, get_telemetry
+from whatdo.config import Settings
+from whatdo.inference.pool import PoolOverloadError, PoolTimeoutError, WorkerPool
+from whatdo.observability import Telemetry
+from whatdo.resolution import ModelNotServedError, resolve_model
+from whatdo.schemas.jev import SystemOneRequest, SystemOneResponse, Usage
 
 router = APIRouter(prefix="/v1", tags=["system-one"])
 

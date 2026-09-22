@@ -1,18 +1,18 @@
 # Observability
 
 OpenTelemetry support is **optional and off by default**. The OTEL libraries live
-in the `laya-server[otel]` extra; the base install imports and runs without them.
+in the `whatdo[otel]` extra; the base install imports and runs without them.
 Enable it with the master toggle, and control each signal independently.
 
 ```bash
-pip install "laya-server[otel]"
+pip install "whatdo[otel]"
 
 LAYA_OTEL__ENABLED=true
 LAYA_OTEL__TRACES=true
 LAYA_OTEL__METRICS=true
 LAYA_OTEL__LOGS=true
 LAYA_OTEL__ENDPOINT=http://otel-collector:4317   # OTLP endpoint
-LAYA_OTEL__SERVICE_NAME=laya-server
+LAYA_OTEL__SERVICE_NAME=whatdo
 ```
 
 When disabled, the request path records into a no-op telemetry facade — it costs

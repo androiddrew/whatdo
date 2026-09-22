@@ -12,9 +12,9 @@ import textwrap
 
 from fastapi.testclient import TestClient
 
-from laya_server.app import create_app
-from laya_server.config import OtelSettings, Settings
-from laya_server.observability import Telemetry
+from whatdo.app import create_app
+from whatdo.config import OtelSettings, Settings
+from whatdo.observability import Telemetry
 
 _BODY = {
     "state": "hi",
@@ -65,7 +65,7 @@ def test_base_install_serves_with_opentelemetry_unimportable() -> None:
         sys.meta_path.insert(0, _Blocker())
 
         from fastapi.testclient import TestClient
-        from laya_server.app import create_app
+        from whatdo.app import create_app
 
         with TestClient(create_app()) as client:
             assert client.get("/healthz").status_code == 200

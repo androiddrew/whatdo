@@ -11,7 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
-from laya_server.schemas.jev import Answer, JSONContent, Question
+from whatdo.schemas.jev import Answer, JSONContent, Question
 
 
 @dataclass(frozen=True)

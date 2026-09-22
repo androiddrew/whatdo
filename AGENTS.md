@@ -4,7 +4,7 @@
 
 ### Issue tracker
 
-Issues live as Gitea issues on git.runcible.io (androiddrew/laya-server), via the `tea` CLI. See `docs/agents/issue-tracker.md`.
+Issues live as GitHub issues on github.com (androiddrew/whatdo), via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

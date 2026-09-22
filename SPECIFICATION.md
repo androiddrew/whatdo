@@ -6,7 +6,7 @@ Documentation for this service should be created with MKDocs.
 
 The goal of this project is to be able to use the official https://github.com/typesafe-ai/typesafe-sdk-python with this FastAPI server. Unit tests, and integration tests validating this will be required. 
 
-This project is hosted on a gitea server with access to gitea action runners. CI should be implemented with Gitea Actions https://docs.gitea.com/usage/actions/design/. We will want linting with Ruff that does black styling, isort, and the regular ruff checks. Mypy I guess could also be warrented. Pyproject.toml Should say Drew Bednar is the author. It's Apache 2.0 licensed and the dependencies as mentioned should be managed with the requirements files I mentioned above, not contained in the pyproject.toml.
+This project is hosted on GitHub with access to GitHub Actions runners. CI should be implemented with GitHub Actions https://docs.github.com/en/actions. We will want linting with Ruff that does black styling, isort, and the regular ruff checks. Mypy I guess could also be warrented. Pyproject.toml Should say Drew Bednar is the author. It's Apache 2.0 licensed and the dependencies as mentioned should be managed with the requirements files I mentioned above, not contained in the pyproject.toml.
 
 There should be a Makefile for developers to perform tasks like linting, first time development environment setup, image builds, dev image builds, etc.
 

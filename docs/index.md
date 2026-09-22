@@ -1,6 +1,6 @@
-# laya-server
+# whatdo
 
-`laya-server` is a FastAPI service that speaks TypeSafe's **Jev API** contract
+`whatdo` is a FastAPI service that speaks TypeSafe's **Jev API** contract
 (`POST /v1/systemone`) over the local **Laya** decision engine, so the official
 [`typesafe-sdk-python`](https://github.com/typesafe-ai/typesafe-sdk-python) can
 drive locally-served, non-autoregressive typed decisions unchanged — point it at
@@ -33,7 +33,7 @@ levels — is its **Criteria**.
 - **Throughput and backpressure** — a thread worker pool of engine copies fed by
   a bounded queue, with a retryable `529` on overload.
 - **Optional OpenTelemetry** — traces, metrics, and structured logs, shipped as
-  the `laya-server[otel]` extra (no OTEL libraries in the base install).
+  the `whatdo[otel]` extra (no OTEL libraries in the base install).
 
 !!! note "`usage.output_tokens` is always 0 — on purpose"
     Every response reports **Usage**, which carries `input_tokens`. Its

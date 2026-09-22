@@ -1,7 +1,7 @@
 """The real inference engine, backed by the Laya decision engine.
 
 ``laya`` (and its torch/transformers stack) is an optional dependency: install
-``laya-server[laya]``. It is imported lazily inside :meth:`load` so the base
+``whatdo[laya]``. It is imported lazily inside :meth:`load` so the base
 install and CI stay lean and never import torch.
 """
 
@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from laya_server.inference.base import PredictResult
-from laya_server.inference.translate import to_jev_answer, to_laya_question
-from laya_server.schemas.jev import Answer, JSONContent, Question
+from whatdo.inference.base import PredictResult
+from whatdo.inference.translate import to_jev_answer, to_laya_question
+from whatdo.schemas.jev import Answer, JSONContent, Question
 
 # Default Laya checkpoint (the English root of the bundled repo).
 DEFAULT_CHECKPOINT = "convaiinnovations/laya"
@@ -44,7 +44,7 @@ class LayaEngine:
         ) as error:  # pragma: no cover - exercised only without the extra
             raise RuntimeError(
                 "The 'laya' package is required for the Laya engine. "
-                "Install it with: pip install 'laya-server[laya]'."
+                "Install it with: pip install 'whatdo[laya]'."
             ) from error
         self._agent = laya.load(
             self._checkpoint, device=self._device, subfolder=self._subfolder

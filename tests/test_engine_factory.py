@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from laya_server.config import ModelSettings, ServerSettings, Settings
-from laya_server.inference.factory import (
+from whatdo.config import ModelSettings, ServerSettings, Settings
+from whatdo.inference.factory import (
     _resolve_devices,
     build_engine,
     build_engines,
 )
-from laya_server.inference.fake import FakeEngine
-from laya_server.inference.laya_engine import LayaEngine
+from whatdo.inference.fake import FakeEngine
+from whatdo.inference.laya_engine import LayaEngine
 
 
 def test_defaults_to_fake_engine() -> None:

@@ -12,7 +12,7 @@ Anything else is not served by this deployment and raises ``ModelNotServedError`
 
 from __future__ import annotations
 
-from laya_server.config import ModelSettings
+from whatdo.config import ModelSettings
 
 # The SDK's default model ids; always resolved to the served model.
 SHIM_ALIASES = ("jev-latest", "jev-preview")

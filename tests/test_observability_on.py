@@ -1,6 +1,6 @@
 """With observability on, the server emits the expected spans and metrics (#8).
 
-Skipped in the base install; where ``laya-server[otel]`` is present it drives a
+Skipped in the base install; where ``whatdo[otel]`` is present it drives a
 request through an in-memory exporter/reader and asserts what was emitted.
 """
 
@@ -20,10 +20,10 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import (  # noqa: E4
     InMemorySpanExporter,
 )
 
-from laya_server.app import create_app  # noqa: E402
-from laya_server.config import OtelSettings, ServerSettings, Settings  # noqa: E402
-from laya_server.inference.fake import FakeEngine  # noqa: E402
 from tests.conftest import BlockingEngine, serve  # noqa: E402
+from whatdo.app import create_app  # noqa: E402
+from whatdo.config import OtelSettings, ServerSettings, Settings  # noqa: E402
+from whatdo.inference.fake import FakeEngine  # noqa: E402
 
 _BODY = {
     "state": "I was charged twice.",
@@ -115,7 +115,7 @@ def test_metrics_on_traces_off_records_metrics_but_no_span() -> None:
 
 
 def test_shutdown_observability_stops_providers_and_is_idempotent() -> None:
-    from laya_server.observability import shutdown_observability
+    from whatdo.observability import shutdown_observability
 
     settings = Settings(otel=OtelSettings(enabled=True, endpoint=None))
     app, _, _ = _otel_app(settings, FakeEngine())

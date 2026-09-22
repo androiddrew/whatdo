@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
-from laya_server.inference.laya_engine import LayaEngine
-from laya_server.schemas.jev import ChoiceAnswer, NoulAnswer, NoulQuestion
+from whatdo.inference.laya_engine import LayaEngine
+from whatdo.schemas.jev import ChoiceAnswer, NoulAnswer, NoulQuestion
 
 
 class _StubAgent:

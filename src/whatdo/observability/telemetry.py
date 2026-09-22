@@ -1,7 +1,7 @@
 """The telemetry facade the request path records through (ticket #8).
 
 Deliberately imports **no** OpenTelemetry: it holds already-built instrument and
-tracer handles (or ``None``) injected by :mod:`laya_server.observability.setup`,
+tracer handles (or ``None``) injected by :mod:`whatdo.observability.setup`,
 so the base install — which has no OTEL libraries — imports this module fine. A
 ``Telemetry()`` with every handle ``None`` is the no-op used when observability
 (or an individual signal) is disabled, and it costs nothing on the hot path.

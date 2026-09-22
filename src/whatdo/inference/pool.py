@@ -20,8 +20,8 @@ import threading
 from concurrent.futures import Future
 from dataclasses import dataclass
 
-from laya_server.inference.base import DecisionEngine, PredictResult
-from laya_server.schemas.jev import JSONContent, Question
+from whatdo.inference.base import DecisionEngine, PredictResult
+from whatdo.schemas.jev import JSONContent, Question
 
 
 class PoolOverloadError(Exception):

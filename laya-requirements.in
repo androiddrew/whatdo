@@ -1,4 +1,4 @@
-# Optional dependency for the `laya-server[laya]` extra: the real Laya engine.
+# Optional dependency for the `whatdo[laya]` extra: the real Laya engine.
 # Pulls a heavy torch/transformers stack, so it is NOT part of the base install
 # or CI (which run the deterministic FakeEngine). The accelerator-specific torch
 # build is selected by the Docker image (ADR-0001).

@@ -15,10 +15,10 @@ from collections.abc import Callable
 
 from typesafe_sdk import Noul, RetryPolicy, TypeSafeAPIError, TypeSafeClient
 
-from laya_server.app import create_app
-from laya_server.config import ServerSettings, Settings
-from laya_server.inference.fake import FakeEngine
 from tests.conftest import BlockingEngine, serve
+from whatdo.app import create_app
+from whatdo.config import ServerSettings, Settings
+from whatdo.inference.fake import FakeEngine
 
 _QUESTIONS = {"billing": Noul(instructions="Is this about billing?")}
 
