@@ -9,9 +9,53 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
 authors = [{ name = "Drew Bednar" }]
-# Runtime dependencies are NOT listed inline here (ADR-0002). They live in the
-# requirements files and are pulled in dynamically below.
-dynamic = ["version", "dependencies", "optional-dependencies"]
+# Runtime deps are declared inline (PEP 621); uv.lock pins them for reproducible,
+# cross-platform installs. Only the version stays dynamic (setuptools-scm, from
+# git tags). See ADR-0006 (supersedes ADR-0002).
+dynamic = ["version"]
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "pydantic-settings",
+]
+
+[project.optional-dependencies]
+# Optional OpenTelemetry stack for the `whatdo[otel]` extra, imported lazily
+# behind the observability toggle and absent from the base install.
+otel = [
+    "opentelemetry-sdk",
+    "opentelemetry-exporter-otlp",
+    "opentelemetry-instrumentation-fastapi",
+    "opentelemetry-instrumentation-logging",
+]
+# Accelerator extras (ADR-0001 / ADR-0006): one torch version, the wheel selected
+# per accelerator via [tool.uv.sources]. cpu/cuda are mutually exclusive (see
+# [tool.uv].conflicts). `laya` always resolves from PyPI — the fork is a Docker
+# build-time option (LAYA_FORK), never a package dependency, so whatdo stays
+# publish-ready (no direct-reference deps in published metadata).
+cpu = ["laya==0.3.4", "torch==2.14.0"]
+cuda = ["laya==0.3.4", "torch==2.14.0"]
+# Documented, unbuilt slots (ADR-0001) — plain deps, no direct URLs:
+# rocm = ["laya==0.3.4", "torch==2.14.0"]
+# jetson = ["laya==0.3.4", "torch==2.14.0"]
+
+[dependency-groups]
+# PEP 735 groups: local/CI tooling, never shipped as part of the package.
+dev = [
+    "pytest",
+    "httpx",
+    "ruff",
+    "mypy",
+    "build",
+    # The official Typesafe SDK: drives the contract tests (FakeEngine, no GPU).
+    "typesafe-sdk",
+]
+docs = [
+    "mkdocs-material",
+    "mkdocstrings[python]",
+]
 
 [project.urls]
 Homepage = "https://github.com/androiddrew/whatdo"
@@ -19,12 +63,24 @@ Homepage = "https://github.com/androiddrew/whatdo"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
-optional-dependencies.otel = { file = ["otel-requirements.txt"] }
-optional-dependencies.laya = { file = ["laya-requirements.txt"] }
-
 [tool.setuptools_scm]
+
+# uv-only dependency sources (local/dev config; stripped from the built wheel, so
+# this stays publish-safe). Selects the torch wheel per accelerator: the cpu extra
+# pulls torch from the PyTorch CPU index; cuda uses the default PyPI torch (which
+# bundles the cu13 nvidia wheels). Non-uv consumers pass --extra-index-url instead
+# (see the README install commands). Future: a `pytorch-rocm` index for rocm.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", extra = "cpu" }]
+
+[tool.uv]
+# cpu and cuda cannot be installed together; resolve each independently in the lock.
+conflicts = [[{ extra = "cpu" }, { extra = "cuda" }]]
 
 [tool.ruff]
 line-length = 88
