@@ -7,6 +7,7 @@ This is the reusable contract-test harness referenced by tickets #3 and #4.
 
 from __future__ import annotations
 
+import logging
 import threading
 import time
 from collections.abc import Iterator
@@ -54,6 +55,35 @@ class BlockingEngine:
         self.entered.set()
         self._release.wait(timeout=10)
         return PredictResult(answers={"billing": NoulAnswer(noul=0.5)}, input_tokens=1)
+
+
+class _ListHandler(logging.Handler):
+    def __init__(self) -> None:
+        super().__init__(level=logging.DEBUG)
+        self.records: list[logging.LogRecord] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.records.append(record)
+
+
+@pytest.fixture
+def whatdo_logs() -> Iterator[list[logging.LogRecord]]:
+    """Records emitted on the ``whatdo`` logger tree, at DEBUG and above.
+
+    ``caplog`` can't see these: the ``whatdo`` logger doesn't propagate to root.
+    Building an app resets the logger level from its settings, so tests that
+    need DEBUG records through an app configure ``logging.level="DEBUG"``.
+    """
+    logger = logging.getLogger("whatdo")
+    handler = _ListHandler()
+    previous_level = logger.level
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    try:
+        yield handler.records
+    finally:
+        logger.removeHandler(handler)
+        logger.setLevel(previous_level)
 
 
 @contextmanager

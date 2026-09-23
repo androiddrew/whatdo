@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import time
 from typing import Annotated
 
@@ -13,6 +14,8 @@ from whatdo.inference.pool import PoolOverloadError, PoolTimeoutError, WorkerPoo
 from whatdo.observability import Telemetry
 from whatdo.resolution import ModelNotServedError, resolve_model
 from whatdo.schemas.jev import SystemOneRequest, SystemOneResponse, Usage
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/v1", tags=["system-one"])
 
@@ -30,6 +33,11 @@ async def system_one(
     try:
         resolved_model = resolve_model(body.model, settings.model)
     except ModelNotServedError as error:
+        logger.info(
+            "Rejected request for model %r (this deployment serves %r)",
+            error.requested,
+            error.served,
+        )
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
         ) from error
@@ -58,7 +66,16 @@ async def system_one(
 
     # Count only served requests, matching the metric's "accepted" meaning; a
     # shed request is signalled solely by the overload counter above.
-    telemetry.record_inference_latency(time.perf_counter() - started)
+    elapsed = time.perf_counter() - started
+    logger.debug(
+        "System One: model %r -> %r, %d questions, %d input tokens, %.1fms",
+        body.model,
+        resolved_model,
+        question_count,
+        result.input_tokens,
+        elapsed * 1000,
+    )
+    telemetry.record_inference_latency(elapsed)
     telemetry.record_request(model=resolved_model, question_count=question_count)
 
     return SystemOneResponse(

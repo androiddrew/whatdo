@@ -7,6 +7,7 @@ real SDK lives in ``test_contract_overload.py``.
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from collections.abc import Sequence
 
@@ -72,6 +73,20 @@ def test_engine_that_never_becomes_ready_fails_readiness() -> None:
         pool.shutdown()
 
 
+def test_load_failure_is_logged(whatdo_logs: list[logging.LogRecord]) -> None:
+    pool = WorkerPool([_FailingLoadEngine()], queue_max=1, request_timeout=5.0)  # type: ignore[list-item]
+    pool.start()
+    try:
+        with pytest.raises(RuntimeError):
+            pool.wait_ready(timeout=5)
+    finally:
+        pool.shutdown()
+    (error,) = [r for r in whatdo_logs if r.levelno == logging.ERROR]
+    assert error.getMessage() == "Engine failed to load"
+    assert error.exc_info is not None
+    assert error.threadName == "laya-worker-0"
+
+
 def test_load_failure_surfaces_through_wait_ready() -> None:
     pool = WorkerPool([_FailingLoadEngine()], queue_max=1, request_timeout=5.0)  # type: ignore[list-item]
     pool.start()
@@ -98,6 +113,25 @@ def test_saturated_queue_raises_overload() -> None:
         first.result(timeout=5)
     finally:
         pool.shutdown()
+
+
+def test_overload_is_logged_as_a_warning(
+    whatdo_logs: list[logging.LogRecord],
+) -> None:
+    engine = BlockingEngine()
+    pool = _pool([engine], queue_max=1)
+    try:
+        first = pool.submit("a", _QUESTIONS)
+        assert engine.entered.wait(timeout=2)
+        pool.submit("b", _QUESTIONS)
+        with pytest.raises(PoolOverloadError):
+            pool.submit("c", _QUESTIONS)
+        engine.release()
+        first.result(timeout=5)
+    finally:
+        pool.shutdown()
+    warnings = [r.getMessage() for r in whatdo_logs if r.levelno == logging.WARNING]
+    assert warnings == ["Worker pool overloaded: queue full (1/1); shedding request"]
 
 
 def test_predict_times_out_when_worker_is_busy() -> None:

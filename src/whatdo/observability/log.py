@@ -17,6 +17,10 @@ TraceContextProvider = Callable[[], "dict[str, str] | None"]
 
 _LAYA_HANDLER_FLAG = "_laya_json_handler"
 
+# Plain-text layout for local development (``json_logs=False``). The thread name
+# identifies which worker (``laya-worker-N``) emitted an engine/pool record.
+TEXT_FORMAT = "%(asctime)s %(levelname)-8s %(name)s [%(threadName)s] %(message)s"
+
 
 class JsonFormatter(logging.Formatter):
     """Render a log record as a single JSON line, with optional trace ids."""
@@ -30,6 +34,7 @@ class JsonFormatter(logging.Formatter):
             "timestamp": self.formatTime(record, "%Y-%m-%dT%H:%M:%S%z"),
             "level": record.levelname,
             "logger": record.name,
+            "thread": record.threadName,
             "message": record.getMessage(),
         }
         if record.exc_info:
@@ -67,4 +72,6 @@ def configure_logging(
     setattr(handler, _LAYA_HANDLER_FLAG, True)
     if json_logs:
         handler.setFormatter(JsonFormatter(trace_context=trace_context))
+    else:
+        handler.setFormatter(logging.Formatter(TEXT_FORMAT))
     logger.addHandler(handler)

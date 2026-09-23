@@ -11,7 +11,11 @@ import logging
 
 import pytest
 
-from whatdo.observability.log import JsonFormatter
+from whatdo.observability.log import (
+    _LAYA_HANDLER_FLAG,
+    JsonFormatter,
+    configure_logging,
+)
 
 
 def _record(message: str = "hello") -> logging.LogRecord:
@@ -31,6 +35,7 @@ def test_json_formatter_emits_structured_fields() -> None:
     assert payload["level"] == "INFO"
     assert payload["logger"] == "whatdo.test"
     assert payload["message"] == "boom"
+    assert payload["thread"] == "MainThread"
     assert "trace_id" not in payload  # no provider => no correlation
 
 
@@ -41,6 +46,23 @@ def test_json_formatter_merges_trace_context_when_provided() -> None:
     payload = json.loads(formatter.format(_record()))
     assert payload["trace_id"] == "abc"
     assert payload["span_id"] == "def"
+
+
+def test_plain_logs_use_a_readable_text_format() -> None:
+    configure_logging(level="INFO", json_logs=False)
+    try:
+        (handler,) = [
+            h
+            for h in logging.getLogger("whatdo").handlers
+            if getattr(h, _LAYA_HANDLER_FLAG, False)
+        ]
+        line = handler.format(_record("boom"))
+        assert "INFO" in line
+        assert "whatdo.test" in line
+        assert "[MainThread]" in line
+        assert line.endswith("boom")
+    finally:
+        configure_logging(level="INFO", json_logs=True)
 
 
 def test_trace_context_provider_reads_the_active_span() -> None:

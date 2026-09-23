@@ -39,8 +39,31 @@ Six custom instruments are exported:
 
 ## Logs
 
-Logs are structured JSON. When the logs signal is on and a span is active, each
-record is correlated with the current trace via `trace_id` / `span_id`.
+Application logs go to the `whatdo` logger, configured by `WHATDO_LOGGING__LEVEL`
+(default `INFO`) and `WHATDO_LOGGING__JSON_LOGS` (default `true`). Uvicorn's
+`--log-level` only affects uvicorn's own access/server lines, not these.
+
+JSON records carry `timestamp`, `level`, `logger`, `thread` and `message`. When
+the OTEL logs signal is on and a span is active, each record is also correlated
+with the current trace via `trace_id` / `span_id`. With `JSON_LOGS=false` the
+same records are rendered as plain text for local development.
+
+| Level | What is logged |
+| ----- | -------------- |
+| `INFO` | Startup summary (engine, served model, worker count, queue/timeout, auth and OTEL state), one line per worker describing its engine copy, each engine's load (including Laya's resolved device and dtype), pool readiness, shutdown, and requests rejected for an unserved **Model**. |
+| `WARNING` | Requests shed as overload (queue full) or timed out (`529`). |
+| `ERROR` | An engine that failed to load, with its traceback. |
+| `DEBUG` | Per request: model resolution, queue depth, the questions sent to the engine, answers, token counts and latencies. |
+
+The `thread` field (`laya-worker-N`) shows which engine copy handled a record.
+**State** payloads are never logged, since they may carry user data; API keys
+are never logged either.
+
+For local development:
+
+```bash
+WHATDO_LOGGING__JSON_LOGS=false WHATDO_LOGGING__LEVEL=DEBUG make run
+```
 
 ## Testing it
 

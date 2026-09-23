@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import pytest
@@ -63,3 +64,24 @@ def test_predict_before_load_raises() -> None:
     engine = LayaEngine()
     with pytest.raises(RuntimeError):
         engine.predict("hi", {})
+
+
+def test_repr_describes_the_checkpoint_and_device() -> None:
+    engine = LayaEngine(checkpoint="org/ckpt", device="cuda:1", subfolder="en")
+    assert repr(engine) == (
+        "LayaEngine(checkpoint='org/ckpt', device='cuda:1', subfolder='en')"
+    )
+
+
+def test_predict_logs_questions_and_answers_at_debug(
+    whatdo_logs: list[logging.LogRecord],
+) -> None:
+    engine = LayaEngine(agent=_StubAgent())
+    engine.predict({"secret": "user data"}, {"billing": NoulQuestion()})
+    messages = [
+        r.getMessage() for r in whatdo_logs if r.name == "whatdo.inference.laya_engine"
+    ]
+    assert any("'billing'" in m and "'noul'" in m for m in messages)
+    assert any("input_tokens=42" in m for m in messages)
+    # The state may carry user data and is never logged.
+    assert not any("user data" in m for m in messages)
