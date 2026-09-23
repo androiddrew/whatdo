@@ -72,10 +72,11 @@ pip install "whatdo[cpu]"  --extra-index-url https://download.pytorch.org/whl/cp
 pip install "whatdo[cuda]"                     # default PyPI torch bundles cu13
 
 # fully-pinned, reproducible, no uv — from the exported lock:
-pip install -r requirements-cpu.txt            # or requirements-cuda.txt
+pip install -r requirements-cuda.txt                                                       # cuda: torch is on PyPI
+pip install -r requirements-cpu.txt --extra-index-url https://download.pytorch.org/whl/cpu  # cpu: +cpu wheel lives on the PyTorch index
 ```
 
-The exported files (`requirements.txt` base, `requirements-cpu.txt`, `requirements-cuda.txt`) are generated from `uv.lock` by `make lock` — never hand-edit them.
+The exported files (`requirements.txt` base, `requirements-cpu.txt`, `requirements-cuda.txt`) are generated from `uv.lock` by `make lock` — never hand-edit them. The `cpu` file pins `torch==2.14.0+cpu`, which is published only on the PyTorch CPU index, so its install (uv or pip) must name that index; the `cuda` file's `torch==2.14.0` comes from PyPI and needs no extra index.
 
 ## Container images
 

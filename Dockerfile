@@ -55,8 +55,11 @@ COPY requirements.txt requirements-cpu.txt requirements-cuda.txt ./
 
 # The laya engine + torch, fully pinned per accelerator (ADR-0001 / ADR-0006):
 # requirements-${ACCEL}.txt selects the cpu (+cpu) or cuda (cu13) torch wheel.
-# INSTALL_LAYA=0 skips the whole stack and installs only the base runtime deps
-# for a fast FakeEngine dev image.
+# The cpu build pins torch==2.14.0+cpu, which lives ONLY on the PyTorch CPU index
+# (not PyPI), so cpu adds that index at install time; cuda's torch==2.14.0 is on
+# PyPI and needs no extra index. `--index-strategy unsafe-best-match` lets uv pick
+# the +cpu wheel across both indexes. INSTALL_LAYA=0 skips the whole stack and
+# installs only the base runtime deps for a fast FakeEngine dev image.
 ARG INSTALL_LAYA=1
 # A fork spec (git+<url>@<ref>) installs laya from a fork instead of the release.
 # This is the ONLY place laya may come from a fork; the package metadata always
@@ -65,8 +68,12 @@ ARG LAYA_FORK=""
 RUN set -eu; \
     if [ "$INSTALL_LAYA" = "1" ]; then \
       case "$ACCEL" in \
-        cpu|cuda) uv pip install --no-cache -r "requirements-${ACCEL}.txt" ;; \
-        *)        echo "unsupported ACCEL=$ACCEL (expected cpu|cuda)" >&2; exit 1 ;; \
+        cpu)  uv pip install --no-cache \
+                --extra-index-url https://download.pytorch.org/whl/cpu \
+                --index-strategy unsafe-best-match \
+                -r requirements-cpu.txt ;; \
+        cuda) uv pip install --no-cache -r requirements-cuda.txt ;; \
+        *)    echo "unsupported ACCEL=$ACCEL (expected cpu|cuda)" >&2; exit 1 ;; \
       esac; \
       if [ -n "$LAYA_FORK" ]; then \
         echo "Installing laya from fork: $LAYA_FORK"; \
