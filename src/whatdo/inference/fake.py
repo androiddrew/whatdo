@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import random
 from collections.abc import Sequence
 
@@ -24,6 +25,8 @@ from whatdo.schemas.jev import (
     ScoreAnswer,
     ScoreQuestion,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _rng(*parts: str) -> random.Random:
@@ -49,8 +52,12 @@ def _argmax(probabilities: dict[str, float]) -> str:
 class FakeEngine:
     """Deterministic engine implementing the ``DecisionEngine`` protocol."""
 
+    def __repr__(self) -> str:
+        return "FakeEngine()"
+
     def load(self) -> None:
         """Nothing to load; the fake engine is ready on construction."""
+        logger.debug("FakeEngine has nothing to load")
 
     def is_ready(self) -> bool:
         return True
@@ -67,9 +74,13 @@ class FakeEngine:
                 answers[name] = self._choice(rng, question)
             elif isinstance(question, ScoreQuestion):
                 answers[name] = self._score(rng, question)
-        return PredictResult(
-            answers=answers, input_tokens=self._estimate_tokens(state, questions)
+        input_tokens = self._estimate_tokens(state, questions)
+        logger.debug(
+            "Fake predict: questions=%s input_tokens=%d",
+            {name: question.type for name, question in questions.items()},
+            input_tokens,
         )
+        return PredictResult(answers=answers, input_tokens=input_tokens)
 
     def _noul(self, rng: random.Random) -> NoulAnswer:
         return NoulAnswer(noul=round(rng.random(), 4))
