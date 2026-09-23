@@ -22,6 +22,8 @@ jobs:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v5
       - run: uv python install 3.12
+      # Fail if uv.lock has drifted from pyproject.toml (must be committed in sync).
+      - run: uv lock --check
       - run: make setup
       - run: make lint
       - run: make typecheck
@@ -71,8 +73,8 @@ jobs:
           tags: whatdo:${{ matrix.accel }}
 
   # Build the MKDocs site with --strict (no publish/hosting for now, #11).
-  # Installs the package so mkdocstrings can import whatdo, plus the docs
-  # tooling from docs-requirements.txt.
+  # `make docs` syncs the PEP 735 `docs` group (mkdocs/mkdocstrings) and installs
+  # the package so mkdocstrings can import whatdo.
   docs:
     runs-on: ubuntu-24.04
     steps:
@@ -81,6 +83,4 @@ jobs:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v5
       - run: uv python install 3.12
-      - run: make setup
-      - run: uv pip install -r docs-requirements.txt
       - run: make docs

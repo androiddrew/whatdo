@@ -40,7 +40,7 @@ See `CONTEXT.md` for the full domain glossary.
 - **Auth or no-auth** — bearer-token auth against configured API keys, or open for trusted networks.
 - **Configurable inference** — one served model per deployment, a thread-based worker pool of model copies fed by a bounded queue, and a retryable `529` on overload.
 - **Optional OpenTelemetry** — logs, traces, and metrics via OTLP, shipped as the `whatdo[otel]` extra (no OTEL libs required for the base install).
-- **Production packaging** — an `ACCEL`-parametrized multi-stage Dockerfile (CPU + CUDA now; ROCm + Jetson planned), managed with `uv` and pinned requirements files.
+- **Production packaging** — an `ACCEL`-parametrized multi-stage Dockerfile (CPU + CUDA now; ROCm + Jetson planned), managed with `uv` and a committed `uv.lock`; dependencies are declared inline in `pyproject.toml` (PEP 621 extras + PEP 735 groups).
 - **Configuration** via Pydantic settings (`WHATDO_`-prefixed environment variables).
 
 ## Documentation & decisions
@@ -48,15 +48,34 @@ See `CONTEXT.md` for the full domain glossary.
 - **Domain glossary:** [`CONTEXT.md`](./CONTEXT.md)
 - **Architecture decisions:** [`docs/adr/`](./docs/adr/)
   - [0001](./docs/adr/0001-accelerator-build-matrix.md) — accelerator build matrix
-  - [0002](./docs/adr/0002-packaging-dynamic-deps.md) — packaging via dynamic dependencies
+  - [0002](./docs/adr/0002-packaging-dynamic-deps.md) — packaging via dynamic dependencies *(superseded by 0006)*
   - [0003](./docs/adr/0003-worker-pool-and-529-overload.md) — worker pool & 529 overload
   - [0004](./docs/adr/0004-model-resolution.md) — model resolution & the jev-latest shim
+  - [0006](./docs/adr/0006-uv-project-dependencies.md) — dependencies managed by uv (pyproject + uv.lock)
 - **Original brief:** [`SPECIFICATION.md`](./SPECIFICATION.md)
 - **User-facing docs** (MKDocs): build locally with `make docs` (see `mkdocs.yml`) — Overview, Quickstart, Configuration, the Jev / System One contract, Deployment, Observability, and Load testing.
 
 ## Development
 
-Developer workflow is driven by a `Makefile` (`make setup`, `lint`, `fmt`, `typecheck`, `test`, `test-slow`, `build-cpu`, `build-cuda`, `build-dev`, `docs`, `load-test`, `run`) using `uv` for environments and dependency compilation. Tests run against a deterministic `FakeEngine` in CI (no GPU); the full end-to-end suite drives the real SDK against real Laya checkpoints on GPU-equipped machines. Load tests use [k6](https://k6.io/).
+Developer workflow is driven by a `Makefile` (`make setup`, `lock`, `lint`, `fmt`, `typecheck`, `test`, `test-otel`, `test-slow`, `build-cpu`, `build-cuda`, `build-dev`, `docs`, `load-test`, `run`) using `uv` for environments and dependency locking. `make setup` runs `uv sync` (base deps + the `dev` group + the editable package, from `uv.lock`); `make lock` refreshes `uv.lock` and re-exports the pinned `requirements*.txt`. Tests run against a deterministic `FakeEngine` in CI (no GPU); the full end-to-end suite drives the real SDK against real Laya checkpoints on GPU-equipped machines. Load tests use [k6](https://k6.io/).
+
+### Installing (dependencies)
+
+Dependencies are declared in `pyproject.toml` and pinned in `uv.lock` (ADR-0006). The Laya engine + torch are accelerator-specific extras (`cpu` / `cuda`) that pin one torch version and select the matching wheel per architecture. You do **not** have to use uv:
+
+```bash
+# uv (index selection is automatic):
+uv sync --extra cpu        # or --extra cuda
+
+# raw pip — name the torch index explicitly:
+pip install "whatdo[cpu]"  --extra-index-url https://download.pytorch.org/whl/cpu
+pip install "whatdo[cuda]"                     # default PyPI torch bundles cu13
+
+# fully-pinned, reproducible, no uv — from the exported lock:
+pip install -r requirements-cpu.txt            # or requirements-cuda.txt
+```
+
+The exported files (`requirements.txt` base, `requirements-cpu.txt`, `requirements-cuda.txt`) are generated from `uv.lock` by `make lock` — never hand-edit them.
 
 ## Container images
 

@@ -17,7 +17,7 @@ ARG ACCEL=cpu
 # purely from the build arg — no per-target Dockerfiles to drift (ADR-0001).
 # --------------------------------------------------------------------------- #
 FROM ubuntu:24.04 AS base-cpu
-# CUDA 13 to match the cu13 torch stack pinned in laya-requirements.txt.
+# CUDA 13 to match the cu13 torch stack pinned in requirements-cuda.txt.
 FROM nvidia/cuda:13.0.1-runtime-ubuntu24.04 AS base-cuda
 # Unbuilt slots — uncomment and validate once we have the hardware:
 # FROM rocm/dev-ubuntu-24.04:6.2 AS base-rocm
@@ -48,39 +48,32 @@ RUN uv python install 3.12 \
 
 WORKDIR /app
 
-# All pinned requirements files up front: needed for the installs below and for
-# setuptools' dynamic-dependency metadata when the app is built (--no-deps only
-# skips installing deps, not generating the [laya]/[otel] extra metadata).
-COPY requirements.txt laya-requirements.txt otel-requirements.txt ./
+# Per-accelerator pinned exports (from uv.lock via `make lock`). Each accel file
+# already carries the base runtime deps + laya + the correct torch wheel/index,
+# so there is no per-accelerator install logic here — just pick the file.
+COPY requirements.txt requirements-cpu.txt requirements-cuda.txt ./
 
-# Base runtime deps: fully lockfile-pinned and trim (no torch).
-RUN uv pip install --no-cache -r requirements.txt
-
-# The laya engine + torch. laya-requirements.txt pins a CUDA (cu13) build, so
-# cuda installs it verbatim (ADR-0002, fully pinned). The trim CPU image cannot
-# use those CUDA wheels, so it installs torch from the cpu index instead — the
-# accelerator split ADR-0001 anticipates. INSTALL_LAYA=0 skips the whole stack
+# The laya engine + torch, fully pinned per accelerator (ADR-0001 / ADR-0006):
+# requirements-${ACCEL}.txt selects the cpu (+cpu) or cuda (cu13) torch wheel.
+# INSTALL_LAYA=0 skips the whole stack and installs only the base runtime deps
 # for a fast FakeEngine dev image.
 ARG INSTALL_LAYA=1
-# CPU-only pins (the cuda path uses laya-requirements.txt); keep in sync with it.
-ARG LAYA_VERSION=0.3.4
-ARG TORCH_VERSION=2.14.0
 # A fork spec (git+<url>@<ref>) installs laya from a fork instead of the release.
+# This is the ONLY place laya may come from a fork; the package metadata always
+# resolves laya from PyPI (keeps whatdo publish-ready).
 ARG LAYA_FORK=""
 RUN set -eu; \
     if [ "$INSTALL_LAYA" = "1" ]; then \
       case "$ACCEL" in \
-        cuda) uv pip install --no-cache -r laya-requirements.txt ;; \
-        cpu)  uv pip install --no-cache \
-                --extra-index-url https://download.pytorch.org/whl/cpu \
-                --index-strategy unsafe-best-match \
-                "torch==${TORCH_VERSION}" "laya==${LAYA_VERSION}" ;; \
-        *)    echo "unsupported ACCEL=$ACCEL (expected cpu|cuda)" >&2; exit 1 ;; \
+        cpu|cuda) uv pip install --no-cache -r "requirements-${ACCEL}.txt" ;; \
+        *)        echo "unsupported ACCEL=$ACCEL (expected cpu|cuda)" >&2; exit 1 ;; \
       esac; \
       if [ -n "$LAYA_FORK" ]; then \
         echo "Installing laya from fork: $LAYA_FORK"; \
         uv pip install --no-cache --no-deps "$LAYA_FORK"; \
       fi; \
+    else \
+      uv pip install --no-cache -r requirements.txt; \
     fi
 
 # Install the app itself into the venv (no dev deps; version pinned so

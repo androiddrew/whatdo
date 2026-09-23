@@ -1,6 +1,0 @@
-# Runtime dependencies (abstract). Compile to requirements.txt with `make compile`.
-# The Laya engine and its torch stack are added in a later ticket (#4).
-fastapi
-uvicorn[standard]
-pydantic
-pydantic-settings

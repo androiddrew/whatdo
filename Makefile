@@ -20,24 +20,23 @@ BASE_URL ?= http://localhost:8000
 API_KEY ?=
 K6_ENV := -e BASE_URL=$(BASE_URL) $(if $(API_KEY),-e API_KEY=$(API_KEY),)
 
-.PHONY: setup compile lint fmt typecheck test test-otel test-slow run \
-	build-cpu build-cuda build-dev docs docs-serve load-test
+.PHONY: setup lock lint fmt typecheck test test-otel test-slow run \
+	build-cpu build-cuda build-dev dist docs docs-serve load-test
 
-## Create the dev virtualenv, install pinned dev deps + the package, install git hooks.
+## Create the dev virtualenv (.venv) from uv.lock: base deps + dev group + the
+## editable package. Reproducible; installs nothing that isn't in the lock.
 setup:
-	$(UV) venv --python $(PY_VERSION)
-	$(UV) pip install -r dev-requirements.txt
-	$(UV) pip install -e . --no-deps
+	$(UV) sync
 	git config core.hooksPath .githooks
 	@echo "Dev environment ready. Git hooks -> .githooks (pre-push runs the fast suite)."
 
-## Recompile the pinned requirements .txt files from the .in sources.
-compile:
-	$(UV) pip compile requirements.in -o requirements.txt
-	$(UV) pip compile dev-requirements.in -o dev-requirements.txt
-	$(UV) pip compile otel-requirements.in -o otel-requirements.txt
-	$(UV) pip compile laya-requirements.in -o laya-requirements.txt
-	$(UV) pip compile docs-requirements.in -o docs-requirements.txt
+## Refresh uv.lock from pyproject, then export per-accelerator pinned requirements
+## for non-uv installs (base runtime, cpu, cuda). uv.lock is the source of truth.
+lock:
+	$(UV) lock
+	$(UV) export --no-dev --no-emit-project --no-hashes -o requirements.txt
+	$(UV) export --no-dev --no-emit-project --no-hashes --extra cpu -o requirements-cpu.txt
+	$(UV) export --no-dev --no-emit-project --no-hashes --extra cuda -o requirements-cuda.txt
 
 ## Lint + format check (no changes).
 lint:
@@ -57,9 +56,9 @@ typecheck:
 test:
 	$(BIN)/pytest -m "not slow"
 
-## Install the [otel] extra, then run the suite so the OTEL-on tests execute.
+## Sync with the [otel] extra, then run the suite so the OTEL-on tests execute.
 test-otel:
-	$(UV) pip install -e '.[otel]'
+	$(UV) sync --extra otel
 	$(BIN)/pytest -m "not slow"
 
 ## Slow suite: real Laya engine on real checkpoints. Requires a GPU; run locally.
@@ -88,12 +87,15 @@ build-dev:
 dist:
 	rm -rf dist
 	$(UV) build
-## Build the documentation site (strict — matches CI). Needs docs-requirements.txt.
+## Build the documentation site (strict — matches CI). Syncs the docs group first
+## so mkdocs/mkdocstrings and the package are available.
 docs:
+	$(UV) sync --group docs
 	$(BIN)/mkdocs build --strict
 
 ## Serve the docs locally with live reload.
 docs-serve:
+	$(UV) sync --group docs
 	$(BIN)/mkdocs serve
 
 ## Run the k6 load tests against a running deployment (needs k6; not gated in CI).
