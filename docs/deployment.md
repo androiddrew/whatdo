@@ -67,6 +67,15 @@ A deployment serves a single **Served Model** with a worker pool of `pool_size`
 copies fed by one bounded queue (`queue_max`); when the queue saturates, requests
 get a retryable `529`. Scale horizontally by running more container replicas.
 
+**Throughput and the GIL.** Workers are threads, but PyTorch releases the GIL
+inside each operation, so copies do run in parallel on CPU and CUDA. Only the
+Python code between operations holds the GIL. Expect sublinear scaling: on an
+M-series Mac (CPU device), going from 1 to 3 workers raised throughput about
+2.1× (6.6 → 13.7 req/s). On CUDA, workers share the device's default stream, so
+the gain mostly comes from overlapping one worker's CPU-side work with another's
+GPU work. Measure on your target hardware with `make load-test`, and add
+replicas when more copies stop helping.
+
 **Apple silicon (MPS) supports one worker.** PyTorch's MPS backend shares one
 GPU command stream per process, so copies running inference concurrently crash
 the process. With the device auto-detected (MPS on a Mac) or set to `mps`,
