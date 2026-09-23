@@ -14,10 +14,10 @@ A caller submits a **State** (the content to evaluate) and a set of **Questions*
 - **Choice** — select one of a defined option set (returns the choice, its distribution, and a confidence)
 - **Score** — rate on an ordered rubric of ≥2 levels (returns a probability-weighted value and a confidence)
 
-### Example Curl Request
+### Example Curl Requests
 
 ```bash
-curl -X POST http://localhost:8123/v1/systemone \
+curl -X POST http://localhost:8000/v1/systemone \
   -H "Content-Type: application/json" \
   -d '{
     "model": "jev-latest",
@@ -29,6 +29,40 @@ curl -X POST http://localhost:8123/v1/systemone \
       }
     }
   }' | jq
+```
+
+```bash
+curl -X POST http://localhost:8000/v1/systemone \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+  "model": "jev-latest",
+  "state": "Help! I was charged twice for my subscription this month and I need a refund immediately before my account overdrafts.",
+  "questions": {
+    "urgency": {
+      "type": "noul",
+      "instructions": "Does this message express urgency or request immediate action?"
+    },
+    "routing_department": {
+      "type": "choice",
+      "instructions": "Which team should handle this?",
+      "criteria": {
+        "billing": ["charges", "invoices", "refunds"],
+        "technical": ["bugs", "outages", "errors"],
+        "general": null
+      }
+    },
+    "severity": {
+      "type": "score",
+      "instructions": "How severe is the issue?",
+      "criteria": [
+        "Cosmetic or informational",
+        "Workaround exists, non-critical",
+        "Blocking issue, requires immediate intervention"
+      ]
+    }
+  }
+}' | jq
 ```
 
 
