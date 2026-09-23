@@ -66,3 +66,11 @@ docker run --gpus all -p 8000:8000 \
 A deployment serves a single **Served Model** with a worker pool of `pool_size`
 copies fed by one bounded queue (`queue_max`); when the queue saturates, requests
 get a retryable `529`. Scale horizontally by running more container replicas.
+
+**Apple silicon (MPS) supports one worker.** PyTorch's MPS backend shares one
+GPU command stream per process, so copies running inference concurrently crash
+the process. With the device auto-detected (MPS on a Mac) or set to `mps`,
+`pool_size` above 1 is refused at startup. To run more copies, put the extras
+on CPU, e.g. `WHATDO_MODEL__DEVICE_MAP='["mps", "cpu", "cpu"]'` for
+`pool_size=3` (`device_map` is applied round-robin, so name every copy), or run
+every copy on CPU with `WHATDO_MODEL__DEVICE=cpu`.

@@ -8,6 +8,7 @@ install and CI stay lean and never import torch.
 from __future__ import annotations
 
 import logging
+import threading
 import time
 from typing import Any
 
@@ -19,6 +20,47 @@ logger = logging.getLogger(__name__)
 
 # Default Laya checkpoint (the English root of the bundled repo).
 DEFAULT_CHECKPOINT = "convaiinnovations/laya"
+
+# laya imports transformers lazily inside ``laya.load``, and transformers
+# resolves its tokenizer/model classes lazily on first use; neither is
+# thread-safe, so pool workers loading concurrently on a cold process fail with
+# e.g. "cannot import name 'AutoTokenizer'". The first successful load in the
+# process therefore runs alone; once it has imported everything, the remaining
+# copies load in parallel. It also means a checkpoint is downloaded only once.
+_first_load_lock = threading.Lock()
+_first_load_done = False
+
+
+def resolves_to_mps(device: str | None) -> bool:
+    """Whether ``laya.load`` would place a copy on Apple's MPS backend.
+
+    Mirrors laya's device selection (explicit device, else CUDA, then MPS, then
+    CPU; an unavailable accelerator falls back to CPU) without loading anything.
+    Without torch installed nothing can load, so nothing is on MPS.
+    """
+    try:
+        import torch
+    except ImportError:  # pragma: no cover - exercised only without the extra
+        return False
+    mps_available = torch.backends.mps.is_available()
+    if device is None:
+        return mps_available and not torch.cuda.is_available()
+    return mps_available and torch.device(device).type == "mps"
+
+
+def _load_agent(
+    laya: Any, checkpoint: str, *, device: str | None, subfolder: str | None
+) -> Any:
+    """``laya.load``, with the process's first load serialized (see above)."""
+    global _first_load_done
+    with _first_load_lock:
+        if not _first_load_done:
+            agent = laya.load(checkpoint, device=device, subfolder=subfolder)
+            # Only a successful load has imported everything; after a failure
+            # the next caller retries alone.
+            _first_load_done = True
+            return agent
+    return laya.load(checkpoint, device=device, subfolder=subfolder)
 
 
 class LayaEngine:
@@ -64,8 +106,8 @@ class LayaEngine:
             self._subfolder,
         )
         started = time.perf_counter()
-        self._agent = laya.load(
-            self._checkpoint, device=self._device, subfolder=self._subfolder
+        self._agent = _load_agent(
+            laya, self._checkpoint, device=self._device, subfolder=self._subfolder
         )
         # Laya auto-detects the device and may silently fall back to CPU, so
         # report what it actually resolved to.
