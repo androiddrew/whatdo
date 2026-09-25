@@ -7,6 +7,7 @@ factory and lifespan.
 
 from __future__ import annotations
 
+import functools
 import logging
 import time
 from collections.abc import AsyncIterator
@@ -144,4 +145,17 @@ def create_app(
     return app
 
 
-app = create_app()
+@functools.cache
+def _default_app() -> FastAPI:
+    return create_app()
+
+
+def __getattr__(name: str) -> FastAPI:
+    """Build ``app`` (for ``uvicorn whatdo.app:app``) on first access.
+
+    Lazy so that importing :func:`create_app` (e.g. from the CLI, which applies
+    its own settings) never builds engines from the environment as a side effect.
+    """
+    if name == "app":
+        return _default_app()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

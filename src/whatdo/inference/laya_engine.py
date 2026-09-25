@@ -1,8 +1,8 @@
 """The real inference engine, backed by the Laya decision engine.
 
-``laya`` (and its torch/transformers stack) is an optional dependency: install
-``whatdo[laya]``. It is imported lazily inside :meth:`load` so the base
-install and CI stay lean and never import torch.
+``laya`` (and its torch/transformers stack) ships with every install of whatdo
+(ADR-0007). It is still imported lazily inside :meth:`load`, so importing the
+app, building engines, and the fake-engine test suite never pay for torch.
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ def resolves_to_mps(device: str | None) -> bool:
     """
     try:
         import torch
-    except ImportError:  # pragma: no cover - exercised only without the extra
+    except ImportError:  # pragma: no cover - broken install only
         return False
     mps_available = bool(torch.backends.mps.is_available())
     if device is None:
@@ -92,12 +92,10 @@ class LayaEngine:
             return
         try:
             import laya
-        except (
-            ImportError
-        ) as error:  # pragma: no cover - exercised only without the extra
+        except ImportError as error:  # pragma: no cover - broken install only
             raise RuntimeError(
-                "The 'laya' package is required for the Laya engine. "
-                "Install it with: pip install 'whatdo[laya]'."
+                "The 'laya' package is missing, but it ships with whatdo; "
+                "reinstall with: pip install --force-reinstall whatdo"
             ) from error
         logger.info(
             "Loading Laya checkpoint=%r device=%s subfolder=%r",

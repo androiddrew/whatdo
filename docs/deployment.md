@@ -9,7 +9,6 @@ are implemented; `rocm` and `jetson` exist as documented, unbuilt slots.
 ```bash
 make build-cpu     # trim CPU image (torch+cpu, no CUDA wheels)
 make build-cuda    # CUDA image (builds on CPU-only hosts; running needs a GPU)
-make build-dev     # fast image: laya/torch skipped, FakeEngine default
 ```
 
 The builder installs the pinned requirements into a `uv`-managed virtualenv; the
@@ -38,8 +37,8 @@ make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
 docker run -p 8000:8000 androiddrew/whatdo:latest
 ```
 
-The images already default to `WHATDO_MODEL__ENGINE=laya`, so the real Laya engine
-loads a **Checkpoint** at startup; `/readyz` returns
+The images run the real Laya engine (the default engine), which loads a
+**Checkpoint** at startup; `/readyz` returns
 `503` until it is loaded and `200` once the deployment is ready to serve. Use
 `/healthz` for liveness (it does not depend on the model).
 

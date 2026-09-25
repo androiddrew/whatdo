@@ -2,6 +2,8 @@
 
 Supersedes [ADR-0002](0002-packaging-dynamic-deps.md). Cooperates with
 [ADR-0001](0001-accelerator-build-matrix.md) (the accelerator build matrix).
+Amended by [ADR-0007](0007-laya-default-engine.md): `laya` and `torch` are now base
+dependencies, and the accelerator extras only choose the torch wheel.
 
 We moved off the pip-tools–style workflow (abstract `*.in` files compiled to pinned `*.txt`
 via `uv pip compile`, pulled into `pyproject.toml` with setuptools *dynamic dependencies*). That

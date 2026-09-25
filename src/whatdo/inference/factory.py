@@ -16,13 +16,14 @@ def build_engine(settings: Settings, device: str | None = None) -> DecisionEngin
     ``device`` overrides ``settings.model.device`` for this copy, so a pool can
     pin copies to distinct devices (ADR-0003).
     """
-    if settings.model.engine == "laya":
-        return LayaEngine(
-            checkpoint=settings.model.laya_checkpoint,
-            device=device if device is not None else settings.model.device,
-            subfolder=settings.model.laya_subfolder,
-        )
-    return FakeEngine()
+    if settings.model.engine == "fake":
+        # Testing only; the fake engine is never the default (ADR-0007).
+        return FakeEngine()
+    return LayaEngine(
+        checkpoint=settings.model.laya_checkpoint,
+        device=device if device is not None else settings.model.device,
+        subfolder=settings.model.laya_subfolder,
+    )
 
 
 def build_engines(settings: Settings) -> list[DecisionEngine]:
@@ -63,7 +64,8 @@ def _reject_shared_mps(devices: list[str | None]) -> None:
         raise ValueError(
             f"pool_size={len(devices)} would place {on_mps} model copies on the "
             "MPS device, which supports only one worker: concurrent inference on "
-            "MPS crashes the process. Set WHATDO_SERVER__POOL_SIZE=1, or put the "
-            "extra copies on CPU with WHATDO_MODEL__DEVICE=cpu or "
+            "MPS crashes the process. Use one worker (--workers 1 or "
+            "WHATDO_SERVER__POOL_SIZE=1), run every copy on CPU (--device cpu or "
+            "WHATDO_MODEL__DEVICE=cpu), or put only the extra copies on CPU with "
             f"WHATDO_MODEL__DEVICE_MAP='{device_map}'."
         )

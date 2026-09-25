@@ -7,7 +7,7 @@ import logging
 from fastapi.testclient import TestClient
 
 from whatdo.app import create_app
-from whatdo.config import AuthSettings, LoggingSettings, Settings
+from whatdo.config import AuthSettings, LoggingSettings, ModelSettings, Settings
 from whatdo.inference.fake import FakeEngine
 
 _API_KEY = "super-secret-key"
@@ -20,7 +20,10 @@ def _messages(records: list[logging.LogRecord], level: int) -> list[str]:
 def test_startup_reports_engine_workers_and_readiness(
     whatdo_logs: list[logging.LogRecord],
 ) -> None:
-    settings = Settings(auth=AuthSettings(enabled=True, api_keys=[_API_KEY]))
+    settings = Settings(
+        model=ModelSettings(engine="fake"),
+        auth=AuthSettings(enabled=True, api_keys=[_API_KEY]),
+    )
     app = create_app(settings=settings, engines=[FakeEngine(), FakeEngine()])
     with TestClient(app):
         pass

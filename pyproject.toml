@@ -15,11 +15,24 @@ authors = [{ name = "Drew Bednar" }]
 dynamic = ["version"]
 
 dependencies = [
+    "click>=8.1",
     "fastapi",
     "uvicorn[standard]",
     "pydantic",
     "pydantic-settings",
+    # The Laya engine ships with every install: it is the default engine
+    # (ADR-0007). `laya` always resolves from PyPI; the fork is a Docker
+    # build-time option (LAYA_FORK), never a package dependency, so whatdo stays
+    # publish-ready (no direct-reference deps in published metadata).
+    "laya==0.3.4",
+    # Plain pip gets PyPI's torch (CUDA-bundled on Linux, CPU/MPS on macOS);
+    # the accelerator extras below only choose a different wheel.
+    "torch==2.14.0",
 ]
+
+# `whatdo serve` starts the API server (see src/whatdo/cli.py).
+[project.scripts]
+whatdo = "whatdo.cli:main"
 
 [project.optional-dependencies]
 # Optional OpenTelemetry stack for the `whatdo[otel]` extra, imported lazily
@@ -30,16 +43,14 @@ otel = [
     "opentelemetry-instrumentation-fastapi",
     "opentelemetry-instrumentation-logging",
 ]
-# Accelerator extras (ADR-0001 / ADR-0006): one torch version, the wheel selected
-# per accelerator via [tool.uv.sources]. cpu/cuda are mutually exclusive (see
-# [tool.uv].conflicts). `laya` always resolves from PyPI — the fork is a Docker
-# build-time option (LAYA_FORK), never a package dependency, so whatdo stays
-# publish-ready (no direct-reference deps in published metadata).
-cpu = ["laya==0.3.4", "torch==2.14.0"]
-cuda = ["laya==0.3.4", "torch==2.14.0"]
+# Accelerator extras (ADR-0001 / ADR-0006 / ADR-0007): the same torch version as
+# the base dependency, with the wheel selected per accelerator via
+# [tool.uv.sources]. cpu/cuda are mutually exclusive (see [tool.uv].conflicts).
+cpu = ["torch==2.14.0"]
+cuda = ["torch==2.14.0"]
 # Documented, unbuilt slots (ADR-0001) — plain deps, no direct URLs:
-# rocm = ["laya==0.3.4", "torch==2.14.0"]
-# jetson = ["laya==0.3.4", "torch==2.14.0"]
+# rocm = ["torch==2.14.0"]
+# jetson = ["torch==2.14.0"]
 
 [dependency-groups]
 # PEP 735 groups: local/CI tooling, never shipped as part of the package.
@@ -96,8 +107,8 @@ strict = true
 mypy_path = "src"
 files = ["src/whatdo"]
 
-# `laya` and `torch` come from the optional accelerator extras, imported lazily;
-# absent in the base install (and CI), so let mypy treat them as untyped.
+# `laya` ships no type information. `torch` is typed, but kept here so a
+# checkout synced without it still typechecks (both are imported lazily).
 [[tool.mypy.overrides]]
 module = ["laya", "laya.*", "torch", "torch.*"]
 ignore_missing_imports = true

@@ -13,6 +13,28 @@ WHATDO_AUTH__API_KEYS='["k1","k2"]'   # auth.api_keys (JSON list)
 WHATDO_OTEL__ENABLED=true             # otel.enabled
 ```
 
+## Command-line flags
+
+`whatdo serve` accepts flags for the most common settings. A flag overrides the
+matching environment variable; everything else still comes from the environment.
+
+| Flag | Setting | Environment variable |
+| ---- | ------- | -------------------- |
+| `--host` | `server.host` | `WHATDO_SERVER__HOST` |
+| `--port` | `server.port` | `WHATDO_SERVER__PORT` |
+| `--workers` | `server.pool_size` | `WHATDO_SERVER__POOL_SIZE` |
+| `--queue-max` | `server.queue_max` | `WHATDO_SERVER__QUEUE_MAX` |
+| `--request-timeout` | `server.request_timeout` | `WHATDO_SERVER__REQUEST_TIMEOUT` |
+| `--engine` | `model.engine` | `WHATDO_MODEL__ENGINE` |
+| `--device` | `model.device` | `WHATDO_MODEL__DEVICE` |
+| `--checkpoint` | `model.laya_checkpoint` | `WHATDO_MODEL__LAYA_CHECKPOINT` |
+| `--log-level` | `logging.level` (also uvicorn's log level) | `WHATDO_LOGGING__LEVEL` |
+| `--json-logs` / `--text-logs` | `logging.json_logs` | `WHATDO_LOGGING__JSON_LOGS` |
+
+`--workers` is the number of model copies (worker threads in one process), not
+uvicorn processes. API keys have no flags, so they never show up in process
+lists or shell history; set `WHATDO_AUTH__ENABLED` and `WHATDO_AUTH__API_KEYS`.
+
 ## Groups at a glance
 
 | Group | Purpose |
@@ -24,10 +46,11 @@ WHATDO_OTEL__ENABLED=true             # otel.enabled
 | `logging` | Log level and JSON-vs-plain formatting. |
 
 !!! tip "Engine selection"
-    `WHATDO_MODEL__ENGINE` chooses the backend: `fake` (default) is the
-    deterministic, GPU-free **FakeEngine** used for local dev and CI; `laya`
-    runs the real **Laya** engine and needs the `whatdo[laya]` extra and,
-    ideally, a GPU. The container images default to `laya`.
+    `WHATDO_MODEL__ENGINE` chooses the backend. `laya` (the default) runs the
+    real **Laya** engine, which ships with every install; a GPU helps but isn't
+    required. `fake` is a deterministic, model-free **FakeEngine** for testing
+    only (CI, exercising the HTTP layer). Its answers are meaningless, so never
+    serve it for real.
 
 ## Settings reference
 
