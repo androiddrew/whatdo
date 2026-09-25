@@ -56,7 +56,12 @@ def test_serve_applies_flags(served: _Served) -> None:
     )  # fmt: skip
 
     assert result.exit_code == 0, result.output
-    assert served.kwargs == {"host": "0.0.0.0", "port": 9001, "log_level": "debug"}
+    assert served.kwargs == {
+        "host": "0.0.0.0",
+        "port": 9001,
+        "log_level": "debug",
+        "log_config": None,  # whatdo owns the uvicorn loggers
+    }
     assert served.settings.server.pool_size == 2
     assert served.settings.model.engine == "fake"
     assert served.settings.logging.level == "DEBUG"
