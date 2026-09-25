@@ -191,4 +191,6 @@ def serve(
         host=settings.server.host,
         port=settings.server.port,
         log_level=settings.logging.level.lower(),
+        # whatdo already configured the uvicorn loggers (JSON by default).
+        log_config=None,
     )

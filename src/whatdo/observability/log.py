@@ -52,26 +52,71 @@ def configure_logging(
     json_logs: bool,
     trace_context: TraceContextProvider | None = None,
 ) -> None:
-    """Install a single handler on the ``whatdo`` logger (idempotent).
+    """Route whatdo, uvicorn and HF library logs through one handler (idempotent).
 
-    Uses a dedicated logger (not root) so repeated app builds in tests don't
-    stack handlers and pytest's own logging is left alone. This mutates a
-    process-global logger, so building two apps with different logging settings
+    Uses dedicated loggers (not root) so repeated app builds in tests don't
+    stack handlers and pytest's own logging is left alone. This mutates
+    process-global loggers, so building two apps with different logging settings
     in one process is last-writer-wins — fine for the single-app deployment.
     """
-    logger = logging.getLogger("whatdo")
-    logger.setLevel(level.upper())
-    logger.propagate = False
-
-    # Drop any handler we installed on a previous build before adding a fresh one.
-    for existing in list(logger.handlers):
-        if getattr(existing, _LAYA_HANDLER_FLAG, False):
-            logger.removeHandler(existing)
-
     handler = logging.StreamHandler()
     setattr(handler, _LAYA_HANDLER_FLAG, True)
     if json_logs:
         handler.setFormatter(JsonFormatter(trace_context=trace_context))
     else:
         handler.setFormatter(logging.Formatter(TEXT_FORMAT))
+
+    for name in ("whatdo", "uvicorn"):
+        logger = logging.getLogger(name)
+        logger.setLevel(level.upper())
+        _install_handler(logger, handler)
+
+    # uvicorn's own dictConfig (when launched as ``uvicorn whatdo.app:app``)
+    # gives these children plain-text handlers; drop them so records propagate
+    # to the ``uvicorn`` handler above instead.
+    for name in ("uvicorn.error", "uvicorn.access"):
+        child = logging.getLogger(name)
+        for existing in list(child.handlers):
+            child.removeHandler(existing)
+        child.propagate = True
+
+    _adopt_hf_logging(handler, json_logs=json_logs)
+
+
+def _install_handler(logger: logging.Logger, handler: logging.Handler) -> None:
+    """Make ``handler`` the only handler on ``logger``, replacing any prior one."""
+    logger.propagate = False
+    for existing in list(logger.handlers):
+        # Keep foreign handlers on ``whatdo`` (e.g. test capture); anything else
+        # on third-party loggers is their default stderr handler.
+        if logger.name != "whatdo" or getattr(existing, _LAYA_HANDLER_FLAG, False):
+            logger.removeHandler(existing)
     logger.addHandler(handler)
+
+
+def _adopt_hf_logging(handler: logging.Handler, *, json_logs: bool) -> None:
+    """Route transformers / huggingface_hub logs through ``handler``.
+
+    Both libraries install their own stderr handler when first imported, so
+    they're imported here (cheap: no torch) to replace it before Laya loads.
+    Their tqdm download bars bypass logging and splice ``\\r`` redraws into
+    JSON lines, so they're turned off for JSON output; an explicit
+    ``HF_HUB_DISABLE_PROGRESS_BARS=0`` still wins.
+    """
+    try:
+        from huggingface_hub.utils.tqdm import (
+            are_progress_bars_disabled,
+            disable_progress_bars,
+        )
+        from transformers.utils import logging as transformers_logging
+    except ImportError:  # pragma: no cover - both ship with whatdo
+        return
+
+    transformers_logging.disable_default_handler()
+    for name in ("transformers", "huggingface_hub"):
+        _install_handler(logging.getLogger(name), handler)
+
+    if json_logs:
+        disable_progress_bars()
+        if are_progress_bars_disabled():  # False when the env var forces them on
+            transformers_logging.disable_progress_bar()  # type: ignore[no-untyped-call]

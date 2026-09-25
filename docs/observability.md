@@ -44,6 +44,12 @@ Application logs go to the `whatdo` logger, configured by `WHATDO_LOGGING__LEVEL
 `--log-level` only affects uvicorn's own access/server lines, not these. The
 `whatdo serve --log-level` flag sets both.
 
+Uvicorn's server and access lines, and any `transformers` / `huggingface_hub`
+warnings, go through the same handler, so every line shares one format. With
+JSON logs on, Hugging Face's download progress bars are turned off because they
+write straight to stderr and break up JSON lines. Set
+`HF_HUB_DISABLE_PROGRESS_BARS=0` to keep them anyway.
+
 JSON records carry `timestamp`, `level`, `logger`, `thread` and `message`. When
 the OTEL logs signal is on and a span is active, each record is also correlated
 with the current trace via `trace_id` / `span_id`. With `JSON_LOGS=false` the

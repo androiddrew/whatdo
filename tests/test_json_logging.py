@@ -81,3 +81,50 @@ def test_trace_context_provider_reads_the_active_span() -> None:
     assert context is not None
     assert len(context["trace_id"]) == 32  # 128-bit id, hex
     assert len(context["span_id"]) == 16
+
+
+def _our_handlers(name: str) -> list[logging.Handler]:
+    return [
+        h
+        for h in logging.getLogger(name).handlers
+        if getattr(h, _LAYA_HANDLER_FLAG, False)
+    ]
+
+
+@pytest.mark.parametrize("name", ["uvicorn", "transformers", "huggingface_hub"])
+def test_third_party_loggers_share_the_whatdo_handler(name: str) -> None:
+    configure_logging(level="INFO", json_logs=True)
+
+    logger = logging.getLogger(name)
+    # Exactly our handler: the library's own stderr handler is gone, and a
+    # rebuild replaces rather than stacks it.
+    configure_logging(level="INFO", json_logs=True)
+    assert logger.handlers == _our_handlers("whatdo")
+    assert logger.propagate is False
+
+
+def test_uvicorn_children_propagate_to_the_shared_handler() -> None:
+    # As if uvicorn's own dictConfig ran first (``uvicorn whatdo.app:app``).
+    access = logging.getLogger("uvicorn.access")
+    access.addHandler(logging.StreamHandler())
+    access.propagate = False
+
+    configure_logging(level="INFO", json_logs=True)
+
+    for name in ("uvicorn.error", "uvicorn.access"):
+        child = logging.getLogger(name)
+        assert child.handlers == []
+        assert child.propagate is True
+
+
+def test_json_logs_disable_hf_progress_bars() -> None:
+    from huggingface_hub.utils import are_progress_bars_disabled, enable_progress_bars
+    from transformers.utils import logging as transformers_logging
+
+    try:
+        configure_logging(level="INFO", json_logs=True)
+        assert are_progress_bars_disabled()
+        assert not transformers_logging.is_progress_bar_enabled()
+    finally:
+        enable_progress_bars()
+        transformers_logging.enable_progress_bar()
