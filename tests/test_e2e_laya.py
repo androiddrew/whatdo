@@ -12,6 +12,8 @@ the three tests.
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from collections.abc import Iterator
 
 import pytest
@@ -93,3 +95,34 @@ def test_score_primitive_e2e(real_laya_client: TypeSafeClient) -> None:
     assert set(score.legend) == {0, 1, 2}
     assert set(score.probabilities) == {0, 1, 2}
     assert abs(sum(score.probabilities.values()) - 1.0) < 0.01
+
+
+# Runs in a fresh interpreter: the concurrent-load race only exists before a
+# process has imported laya/transformers, which this module's fixture already
+# has by the time the test runs.
+_MULTI_WORKER_STARTUP = """
+from whatdo.inference.laya_engine import LayaEngine
+from whatdo.inference.pool import WorkerPool
+
+pool = WorkerPool(
+    [LayaEngine(device="cpu"), LayaEngine(device="cpu")],
+    queue_max=1,
+    request_timeout=30,
+)
+pool.start()
+try:
+    pool.wait_ready(timeout=600)
+finally:
+    pool.shutdown()
+"""
+
+
+def test_multiple_workers_load_on_a_cold_process() -> None:
+    pytest.importorskip("laya")
+    completed = subprocess.run(
+        [sys.executable, "-c", _MULTI_WORKER_STARTUP],
+        capture_output=True,
+        text=True,
+        timeout=900,
+    )
+    assert completed.returncode == 0, completed.stderr
