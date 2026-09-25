@@ -93,6 +93,23 @@ The requirements files pin every dependency but not whatdo itself; `pip install 
 
 ## Starting the Server
 
+```bash
+whatdo serve
+```
+
+The server listens on `http://0.0.0.0:8000` and runs the Laya engine. The first start downloads the model checkpoint from Hugging Face, which takes a minute or two; `GET /readyz` returns `200` once it's loaded.
+
+Common options:
+
+```bash
+whatdo serve --port 9000                  # listen on another port
+whatdo serve --workers 2 --device cpu     # two model copies serving in parallel, on the CPU
+whatdo serve --log-level debug --text-logs  # readable debug logs in a terminal
+whatdo serve --help                       # every option, with its WHATDO_* environment variable
+```
+
+Every option can also be set with its `WHATDO_*` environment variable; flags take precedence. On Apple silicon the GPU (MPS) supports only one worker, so use `--device cpu` for more.
+
 ### Example Curl Requests
 
 ```bash

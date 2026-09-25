@@ -15,6 +15,7 @@ authors = [{ name = "Drew Bednar" }]
 dynamic = ["version"]
 
 dependencies = [
+    "click>=8.1",
     "fastapi",
     "uvicorn[standard]",
     "pydantic",
@@ -28,6 +29,10 @@ dependencies = [
     # the accelerator extras below only choose a different wheel.
     "torch==2.14.0",
 ]
+
+# `whatdo serve` starts the API server (see src/whatdo/cli.py).
+[project.scripts]
+whatdo = "whatdo.cli:main"
 
 [project.optional-dependencies]
 # Optional OpenTelemetry stack for the `whatdo[otel]` extra, imported lazily

@@ -2596,6 +2596,7 @@ wheels = [
 name = "whatdo"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
     { name = "fastapi" },
     { name = "laya" },
     { name = "pydantic" },
@@ -2637,6 +2638,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "click", specifier = ">=8.1" },
     { name = "fastapi" },
     { name = "laya", specifier = "==0.3.4" },
     { name = "opentelemetry-exporter-otlp", marker = "extra == 'otel'" },

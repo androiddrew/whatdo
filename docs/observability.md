@@ -41,7 +41,8 @@ Six custom instruments are exported:
 
 Application logs go to the `whatdo` logger, configured by `WHATDO_LOGGING__LEVEL`
 (default `INFO`) and `WHATDO_LOGGING__JSON_LOGS` (default `true`). Uvicorn's
-`--log-level` only affects uvicorn's own access/server lines, not these.
+`--log-level` only affects uvicorn's own access/server lines, not these. The
+`whatdo serve --log-level` flag sets both.
 
 JSON records carry `timestamp`, `level`, `logger`, `thread` and `message`. When
 the OTEL logs signal is on and a span is active, each record is also correlated

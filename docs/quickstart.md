@@ -9,13 +9,13 @@ The fastest way to a running server is the container image (see
 docker run -p 8000:8000 androiddrew/whatdo:latest
 ```
 
-Or install from PyPI and start the server with uvicorn. It serves the real
-Laya engine; the first start downloads the **Checkpoint** from Hugging Face,
-which takes a minute or two:
+Or install from PyPI and start the server with the `whatdo` command. It serves
+the real Laya engine; the first start downloads the **Checkpoint** from Hugging
+Face, which takes a minute or two:
 
 ```bash
 pip install whatdo    # CPU-only Linux: add --extra-index-url https://download.pytorch.org/whl/cpu
-uvicorn whatdo.app:app --host 0.0.0.0 --port 8000
+whatdo serve          # see `whatdo serve --help` for port, workers, device, logging
 ```
 
 Or run from a checkout for local development:
