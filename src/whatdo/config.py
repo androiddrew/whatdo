@@ -31,10 +31,10 @@ class ServerSettings(BaseModel):
 class ModelSettings(BaseModel):
     """Which model a deployment serves and how it is resolved (ADR-0004)."""
 
-    # Which inference engine backs the service. "fake" is deterministic and
-    # GPU-free (CI, local dev); "laya" runs the real engine (needs the [laya]
-    # extra and, ideally, a GPU).
-    engine: Literal["fake", "laya"] = "fake"
+    # Which inference engine backs the service. "laya" is the real engine and
+    # the default (ADR-0007). "fake" is a deterministic, model-free stand-in for
+    # testing only (e.g. exercising the HTTP layer); never serve it for real.
+    engine: Literal["fake", "laya"] = "laya"
     # Laya checkpoint to load when engine == "laya". Proper served-model / alias
     # resolution over these arrives in ticket #5.
     laya_checkpoint: str = DEFAULT_CHECKPOINT

@@ -4,6 +4,10 @@ BIN := $(VENV)/bin
 PY_VERSION ?= 3.12
 HOST ?= 127.0.0.1
 PORT ?= 8000
+# Which torch build the dev venv gets (ADR-0007): `cpu` (PyTorch CPU wheels; the
+# regular PyPI build on macOS) or `cuda`. Every sync passes it, because `uv sync`
+# removes extras it isn't given and would swap torch for PyPI's CUDA build.
+ACCEL ?= cpu
 
 # Image build knobs (ADR-0001). IMAGE/TAG name the image; LAYA_FORK, when set to
 # a `git+…@ref` spec, installs laya from a fork instead of the pinned release.
@@ -21,12 +25,13 @@ API_KEY ?=
 K6_ENV := -e BASE_URL=$(BASE_URL) $(if $(API_KEY),-e API_KEY=$(API_KEY),)
 
 .PHONY: setup lock lint fmt typecheck test test-otel test-slow run \
-	build-cpu build-cuda build-dev dist docs docs-serve load-test
+	build-cpu build-cuda dist docs docs-serve load-test
 
-## Create the dev virtualenv (.venv) from uv.lock: base deps + dev group + the
-## editable package. Reproducible; installs nothing that isn't in the lock.
+## Create the dev virtualenv (.venv) from uv.lock: base deps (incl. laya +
+## torch for ACCEL) + dev group + the editable package. Reproducible; installs
+## nothing that isn't in the lock. On a CUDA box: make setup ACCEL=cuda.
 setup:
-	$(UV) sync
+	$(UV) sync --extra $(ACCEL)
 	git config core.hooksPath .githooks
 	@echo "Dev environment ready. Git hooks -> .githooks (pre-push runs the fast suite)."
 
@@ -58,14 +63,16 @@ test:
 
 ## Sync with the [otel] extra, then run the suite so the OTEL-on tests execute.
 test-otel:
-	$(UV) sync --extra otel
+	$(UV) sync --extra otel --extra $(ACCEL)
 	$(BIN)/pytest -m "not slow"
 
 ## Slow suite: real Laya engine on real checkpoints. Requires a GPU; run locally.
 test-slow:
 	$(BIN)/pytest -m slow
 
-## Run the app locally with autoreload.
+## Run the app locally with autoreload. Serves the real Laya engine (the first
+## run downloads the checkpoint); WHATDO_MODEL__ENGINE=fake make run for a
+## model-free server when only testing the HTTP layer.
 run:
 	$(BIN)/uvicorn whatdo.app:app --host $(HOST) --port $(PORT) --reload
 
@@ -77,12 +84,6 @@ build-cpu:
 build-cuda:
 	$(DOCKER) build --build-arg ACCEL=cuda $(FORK_BUILD_ARG) -t $(IMAGE):cuda-$(TAG) .
 
-## Build the fast dev image: CPU base, laya/torch skipped, FakeEngine default.
-build-dev:
-	$(DOCKER) build --build-arg ACCEL=cpu \
-		--build-arg INSTALL_LAYA=0 --build-arg DEFAULT_ENGINE=fake \
-		-t $(IMAGE):dev .
-
 ## Build the sdist + wheel into dist/ (version derived by setuptools-scm).
 dist:
 	rm -rf dist
@@ -90,12 +91,12 @@ dist:
 ## Build the documentation site (strict — matches CI). Syncs the docs group first
 ## so mkdocs/mkdocstrings and the package are available.
 docs:
-	$(UV) sync --group docs
+	$(UV) sync --group docs --extra $(ACCEL)
 	$(BIN)/mkdocs build --strict
 
 ## Serve the docs locally with live reload.
 docs-serve:
-	$(UV) sync --group docs
+	$(UV) sync --group docs --extra $(ACCEL)
 	$(BIN)/mkdocs serve
 
 ## Run the k6 load tests against a running deployment (needs k6; not gated in CI).

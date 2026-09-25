@@ -9,6 +9,8 @@ def test_settings_have_sensible_defaults() -> None:
     assert settings.server.port == 8000
     assert settings.server.pool_size == 1
     assert settings.model.served_model == "auto"
+    # The real engine is the default; the fake engine is opt-in, for tests.
+    assert settings.model.engine == "laya"
     assert settings.auth.enabled is False
     assert settings.otel.enabled is False
 

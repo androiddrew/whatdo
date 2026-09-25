@@ -1,8 +1,9 @@
-"""A deterministic, GPU-free engine for tests and local development.
+"""A deterministic, model-free engine for testing only.
 
 Given the same State and Questions it always returns the same well-formed
 answers, so contract tests can drive the real SDK against it in CI without a
-model or a GPU.
+model or a GPU. Its answers are meaningless: it is never the default engine and
+must be selected explicitly (``WHATDO_MODEL__ENGINE=fake``, ADR-0007).
 """
 
 from __future__ import annotations

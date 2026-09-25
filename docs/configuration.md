@@ -24,10 +24,11 @@ WHATDO_OTEL__ENABLED=true             # otel.enabled
 | `logging` | Log level and JSON-vs-plain formatting. |
 
 !!! tip "Engine selection"
-    `WHATDO_MODEL__ENGINE` chooses the backend: `fake` (default) is the
-    deterministic, GPU-free **FakeEngine** used for local dev and CI; `laya`
-    runs the real **Laya** engine and needs the `whatdo[laya]` extra and,
-    ideally, a GPU. The container images default to `laya`.
+    `WHATDO_MODEL__ENGINE` chooses the backend. `laya` (the default) runs the
+    real **Laya** engine, which ships with every install; a GPU helps but isn't
+    required. `fake` is a deterministic, model-free **FakeEngine** for testing
+    only (CI, exercising the HTTP layer). Its answers are meaningless, so never
+    serve it for real.
 
 ## Settings reference
 

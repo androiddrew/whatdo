@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 
 from whatdo.app import create_app
 from whatdo.config import OtelSettings, Settings
+from whatdo.inference.fake import FakeEngine
 from whatdo.observability import Telemetry
 
 _BODY = {
@@ -24,7 +25,7 @@ _BODY = {
 
 
 def test_default_settings_leave_observability_off() -> None:
-    app = create_app()
+    app = create_app(engine=FakeEngine())
     telemetry = app.state.telemetry
     assert isinstance(telemetry, Telemetry)
     # No provider is built when disabled.
@@ -33,7 +34,9 @@ def test_default_settings_leave_observability_off() -> None:
 
 
 def test_request_succeeds_and_noop_telemetry_records_nothing() -> None:
-    app = create_app(settings=Settings(otel=OtelSettings(enabled=False)))
+    app = create_app(
+        settings=Settings(otel=OtelSettings(enabled=False)), engine=FakeEngine()
+    )
     with TestClient(app) as client:
         response = client.post("/v1/systemone", json=_BODY)
     assert response.status_code == 200
@@ -66,8 +69,9 @@ def test_base_install_serves_with_opentelemetry_unimportable() -> None:
 
         from fastapi.testclient import TestClient
         from whatdo.app import create_app
+        from whatdo.inference.fake import FakeEngine
 
-        with TestClient(create_app()) as client:
+        with TestClient(create_app(engine=FakeEngine())) as client:
             assert client.get("/healthz").status_code == 200
             response = client.post(
                 "/v1/systemone",

@@ -327,7 +327,7 @@ name = "cuda-bindings"
 version = "13.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cuda-pathfinder", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "cuda-pathfinder", marker = "(python_full_version < '3.15' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/65/11/1293429c1c3a3e19b551275e65efddd122a905bbe7e368816a59f3ef2a41/cuda_bindings-13.4.3-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:bfbd3f7d4ac04dd41dc49121b9e408c8283992f47124c2290ecb79bbbadcca8e", size = 6488226, upload-time = "2026-09-23T02:22:00.578Z" },
@@ -366,43 +366,43 @@ wheels = [
 
 [package.optional-dependencies]
 cublas = [
-    { name = "nvidia-cublas", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cublas", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cudart = [
-    { name = "nvidia-cuda-runtime", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cuda-runtime", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cufft = [
-    { name = "nvidia-cufft", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cufft", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cufile = [
-    { name = "nvidia-cufile", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cufile", marker = "(platform_machine != 'aarch64' and platform_machine != 'x86_64' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'aarch64' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cupti = [
-    { name = "nvidia-cuda-cupti", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cuda-cupti", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 curand = [
-    { name = "nvidia-curand", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-curand", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cusolver = [
-    { name = "nvidia-cublas", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-cusolver", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-cusparse", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cublas", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cusolver", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cusparse", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cusparse = [
-    { name = "nvidia-cusparse", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cusparse", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 nvjitlink = [
-    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nvjitlink", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 nvrtc = [
-    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cuda-nvrtc", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 nvtx = [
-    { name = "nvidia-nvtx", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nvtx", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'x86_64' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (platform_machine == 'AMD64' and sys_platform == 'win32' and extra != 'extra-6-whatdo-cpu') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform == 'win32' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 
 [[package]]
@@ -667,7 +667,7 @@ dependencies = [
     { name = "click" },
     { name = "filelock" },
     { name = "fsspec" },
-    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
+    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64' or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
     { name = "httpx" },
     { name = "packaging" },
     { name = "pyyaml" },
@@ -718,7 +718,7 @@ dependencies = [
     { name = "numpy" },
     { name = "safetensors" },
     { name = "torch", version = "2.14.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "torch", version = "2.14.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "torch", version = "2.14.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
     { name = "torch", version = "2.14.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
     { name = "transformers" },
 ]
@@ -1208,7 +1208,7 @@ name = "nvidia-cublas"
 version = "13.1.1.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cuda-nvrtc", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "nvidia-cuda-nvrtc", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a7/a1/0bd24ee8c8d03adac032fd2909426a00c88f8c57961b1277ded97f91119f/nvidia_cublas-13.1.1.3-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:b7a210458267ac818974c53038fbec2e969d5c99f305ab15c72522fa9f001dd5", size = 542848918, upload-time = "2026-04-08T18:46:22.985Z" },
@@ -1251,7 +1251,7 @@ name = "nvidia-cudnn-cu13"
 version = "9.24.0.43"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cublas", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "nvidia-cublas", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ca/30/7c257e3d5cb4fecb147b93895c66e29c93f8e76d74b45bb418ff0587c4ec/nvidia_cudnn_cu13-9.24.0.43-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:a6812a554a1ff0413e9c52b84c26c050380649ab9615f9c16bded368ce9f421f", size = 650976863, upload-time = "2026-07-02T16:23:39.248Z" },
@@ -1264,7 +1264,7 @@ name = "nvidia-cufft"
 version = "12.0.0.61"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "nvidia-nvjitlink", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8b/ae/f417a75c0259e85c1d2f83ca4e960289a5f814ed0cea74d18c353d3e989d/nvidia_cufft-12.0.0.61-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:2708c852ef8cd89d1d2068bdbece0aa188813a0c934db3779b9b1faa8442e5f5", size = 214053554, upload-time = "2025-09-04T08:31:38.196Z" },
@@ -1296,9 +1296,9 @@ name = "nvidia-cusolver"
 version = "12.0.4.66"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-cublas", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "nvidia-cusparse", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "nvidia-nvjitlink", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "nvidia-cublas", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "nvidia-cusparse", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "nvidia-nvjitlink", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c8/c3/b30c9e935fc01e3da443ec0116ed1b2a009bb867f5324d3f2d7e533e776b/nvidia_cusolver-12.0.4.66-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:02c2457eaa9e39de20f880f4bd8820e6a1cfb9f9a34f820eb12a155aa5bc92d2", size = 223467760, upload-time = "2025-09-04T08:33:04.222Z" },
@@ -1311,7 +1311,7 @@ name = "nvidia-cusparse"
 version = "12.6.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "nvidia-nvjitlink", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f8/94/5c26f33738ae35276672f12615a64bd008ed5be6d1ebcb23579285d960a9/nvidia_cusparse-12.6.3.3-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:80bcc4662f23f1054ee334a15c72b8940402975e0eab63178fc7e670aa59472c", size = 162155568, upload-time = "2025-09-04T08:33:42.864Z" },
@@ -2148,20 +2148,20 @@ resolution-markers = [
     "python_full_version < '3.13'",
 ]
 dependencies = [
-    { name = "cuda-bindings", marker = "(python_full_version < '3.15' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (python_full_version >= '3.15' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "cuda-toolkit", extra = ["cublas", "cudart", "cufft", "cufile", "cupti", "curand", "cusolver", "cusparse", "nvjitlink", "nvrtc", "nvtx"], marker = "(sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "filelock", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "fsspec", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "jinja2", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "networkx", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "nvidia-cudnn-cu13", marker = "(sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-cusparselt-cu13", marker = "(sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-nccl-cu13", marker = "(sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "nvidia-nvshmem-cu13", marker = "(sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "setuptools", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "sympy", marker = "extra == 'extra-6-whatdo-cuda'" },
-    { name = "triton", marker = "(python_full_version < '3.15' and sys_platform == 'linux' and extra == 'extra-6-whatdo-cuda') or (python_full_version >= '3.15' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda') or (sys_platform != 'linux' and extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
-    { name = "typing-extensions", marker = "extra == 'extra-6-whatdo-cuda'" },
+    { name = "cuda-bindings", marker = "(python_full_version < '3.15' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "cuda-toolkit", extra = ["cublas", "cudart", "cufft", "cufile", "cupti", "curand", "cusolver", "cusparse", "nvjitlink", "nvrtc", "nvtx"], marker = "(sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "filelock", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "fsspec", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "jinja2", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "networkx", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "nvidia-cudnn-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-cusparselt-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nccl-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "nvidia-nvshmem-cu13", marker = "(sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "setuptools", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "sympy", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "triton", marker = "(python_full_version < '3.15' and sys_platform == 'linux' and extra != 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "typing-extensions", marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/17/76/bb4770f56cf6d8971671dbcbb7493e5a6a15ad2825f4e359b02c27c38297/torch-2.14.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:c1f844f1c750e87df4b68bc3afbc0e2b0c7ef19d7b8f666e48bdcf6a0c4f0056", size = 127303200, upload-time = "2026-09-02T13:43:20.311Z" },
@@ -2233,7 +2233,7 @@ name = "tqdm"
 version = "4.70.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0d/ea/b2a5bd54b28a324dae8211928b2d730b6547500342c7e6c6dea08bd0a485/tqdm-4.70.1.tar.gz", hash = "sha256:cefd0eca11b2a37a3aee776544d4f4ae913f02688135b5556b8788dfa474afc4", size = 171846, upload-time = "2026-09-11T07:25:16.601Z" }
 wheels = [
@@ -2290,7 +2290,7 @@ version = "0.27.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
     { name = "rich" },
     { name = "shellingham" },
 ]
@@ -2597,19 +2597,21 @@ name = "whatdo"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "laya" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "torch", version = "2.14.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
+    { name = "torch", version = "2.14.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-6-whatdo-cuda' or extra != 'extra-6-whatdo-cpu'" },
+    { name = "torch", version = "2.14.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.optional-dependencies]
 cpu = [
-    { name = "laya" },
     { name = "torch", version = "2.14.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
     { name = "torch", version = "2.14.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-6-whatdo-cpu') or (extra == 'extra-6-whatdo-cpu' and extra == 'extra-6-whatdo-cuda')" },
 ]
 cuda = [
-    { name = "laya" },
     { name = "torch", version = "2.14.0", source = { registry = "https://pypi.org/simple" } },
 ]
 otel = [
@@ -2636,14 +2638,14 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi" },
-    { name = "laya", marker = "extra == 'cpu'", specifier = "==0.3.4" },
-    { name = "laya", marker = "extra == 'cuda'", specifier = "==0.3.4" },
+    { name = "laya", specifier = "==0.3.4" },
     { name = "opentelemetry-exporter-otlp", marker = "extra == 'otel'" },
     { name = "opentelemetry-instrumentation-fastapi", marker = "extra == 'otel'" },
     { name = "opentelemetry-instrumentation-logging", marker = "extra == 'otel'" },
     { name = "opentelemetry-sdk", marker = "extra == 'otel'" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "torch", specifier = "==2.14.0" },
     { name = "torch", marker = "extra == 'cpu'", specifier = "==2.14.0", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "whatdo", extra = "cpu" } },
     { name = "torch", marker = "extra == 'cuda'", specifier = "==2.14.0" },
     { name = "uvicorn", extras = ["standard"] },

@@ -4,8 +4,6 @@ A Typesafe-compatible API backed by the [Laya](https://github.com/NandhaKishorM/
 
 `whatdo` implements the **Jev API** wire contract (`POST /v1/systemone`) over the local Laya engine, so the official [`typesafe-sdk-python`](https://github.com/typesafe-ai/typesafe-sdk-python) works against a self-hosted deployment unchanged — point it at your server with `TYPESAFE_BASE_URL` and your existing `client.system_one(...)` code runs locally.
 
-> **Status:** design complete, pre-implementation. The design is captured in `CONTEXT.md` and `docs/adr/`; the implementation is tracked as issues on the [GitHub project](https://github.com/androiddrew/whatdo/issues).
-
 ## What it does
 
 A caller submits a **State** (the content to evaluate) and a set of **Questions**, and receives typed **Answers** in a single forward pass. Three decision primitives are supported:
@@ -13,6 +11,87 @@ A caller submits a **State** (the content to evaluate) and a set of **Questions*
 - **Noul** — a calibrated boolean (probability 0–1)
 - **Choice** — select one of a defined option set (returns the choice, its distribution, and a confidence)
 - **Score** — rate on an ordered rubric of ≥2 levels (returns a probability-weighted value and a confidence)
+
+### Key characteristics
+
+- **Drop-in Jev API** — `POST /v1/systemone` plus `GET /v1/models`, `/healthz`, `/readyz`.
+- **Auth or no-auth** — bearer-token auth against configured API keys, or open for trusted networks.
+- **Configurable inference** — one served model per deployment, a thread-based worker pool of model copies fed by a bounded queue, and a retryable `529` on overload.
+- **Optional OpenTelemetry** — logs, traces, and metrics via OTLP, shipped as the `whatdo[otel]` extra (no OTEL libs required for the base install).
+- **Production packaging** — an `ACCEL`-parametrized multi-stage Dockerfile (CPU + CUDA now; ROCm + Jetson planned), managed with `uv` and a committed `uv.lock`; dependencies are declared inline in `pyproject.toml` (PEP 621 extras + PEP 735 groups).
+- **Configuration** via Pydantic settings (`WHATDO_`-prefixed environment variables).
+
+## Installation
+
+whatdo requires Python >= 3.12. Every install includes the Laya engine and PyTorch; the choice below is only which PyTorch build you get.
+
+### From PyPI
+
+Create a virtual environment first (recommended):
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**Nvidia CUDA**
+
+```bash
+pip install whatdo
+```
+
+**CPU**:
+
+```bash
+pip install whatdo --extra-index-url https://download.pytorch.org/whl/cpu
+```
+
+**macOS** (uses the Apple GPU when available, otherwise the CPU):
+
+```bash
+pip install whatdo
+```
+
+### From the GitHub source
+
+Clone the repository:
+
+```bash
+git clone https://github.com/androiddrew/whatdo.git
+cd whatdo
+```
+
+**With [uv](https://docs.astral.sh/uv/)** (creates `.venv` and installs the exact locked versions):
+
+```bash
+uv sync --extra cuda    # CUDA (Linux with an NVIDIA GPU)
+uv sync --extra cpu     # CPU (Linux without a GPU, or macOS)
+source .venv/bin/activate
+```
+
+**With pip** (installs the exact locked versions from the `requirements-*.txt` files, then whatdo itself from the checkout):
+
+CUDA:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-cuda.txt
+pip install --no-deps .
+```
+
+CPU (Linux without a GPU, or macOS):
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-cpu.txt --extra-index-url https://download.pytorch.org/whl/cpu
+pip install --no-deps .
+```
+
+The requirements files pin every dependency but not whatdo itself; `pip install --no-deps .` installs whatdo from the checkout without changing those pinned versions.
+
+## Starting the Server
 
 ### Example Curl Requests
 
@@ -65,52 +144,13 @@ curl -X POST http://localhost:8000/v1/systemone \
 }' | jq
 ```
 
+## Design
 
-See `CONTEXT.md` for the full domain glossary.
-
-## Key characteristics
-
-- **Drop-in Jev API** — `POST /v1/systemone` plus `GET /v1/models`, `/healthz`, `/readyz`.
-- **Auth or no-auth** — bearer-token auth against configured API keys, or open for trusted networks.
-- **Configurable inference** — one served model per deployment, a thread-based worker pool of model copies fed by a bounded queue, and a retryable `529` on overload.
-- **Optional OpenTelemetry** — logs, traces, and metrics via OTLP, shipped as the `whatdo[otel]` extra (no OTEL libs required for the base install).
-- **Production packaging** — an `ACCEL`-parametrized multi-stage Dockerfile (CPU + CUDA now; ROCm + Jetson planned), managed with `uv` and a committed `uv.lock`; dependencies are declared inline in `pyproject.toml` (PEP 621 extras + PEP 735 groups).
-- **Configuration** via Pydantic settings (`WHATDO_`-prefixed environment variables).
-
-## Documentation & decisions
-
-- **Domain glossary:** [`CONTEXT.md`](./CONTEXT.md)
-- **Architecture decisions:** [`docs/adr/`](./docs/adr/)
-  - [0001](./docs/adr/0001-accelerator-build-matrix.md) — accelerator build matrix
-  - [0002](./docs/adr/0002-packaging-dynamic-deps.md) — packaging via dynamic dependencies *(superseded by 0006)*
-  - [0003](./docs/adr/0003-worker-pool-and-529-overload.md) — worker pool & 529 overload
-  - [0004](./docs/adr/0004-model-resolution.md) — model resolution & the jev-latest shim
-  - [0006](./docs/adr/0006-uv-project-dependencies.md) — dependencies managed by uv (pyproject + uv.lock)
-- **Original brief:** [`SPECIFICATION.md`](./SPECIFICATION.md)
-- **User-facing docs** (MKDocs): build locally with `make docs` (see `mkdocs.yml`) — Overview, Quickstart, Configuration, the Jev / System One contract, Deployment, Observability, and Load testing.
+The domain glossary lives in [`CONTEXT.md`](https://github.com/androiddrew/whatdo/blob/main/CONTEXT.md), and the architecture decisions in [`docs/adr/`](https://github.com/androiddrew/whatdo/tree/main/docs/adr).
 
 ## Development
 
-Developer workflow is driven by a `Makefile` (`make setup`, `lock`, `lint`, `fmt`, `typecheck`, `test`, `test-otel`, `test-slow`, `build-cpu`, `build-cuda`, `build-dev`, `docs`, `load-test`, `run`) using `uv` for environments and dependency locking. `make setup` runs `uv sync` (base deps + the `dev` group + the editable package, from `uv.lock`); `make lock` refreshes `uv.lock` and re-exports the pinned `requirements*.txt`. Tests run against a deterministic `FakeEngine` in CI (no GPU); the full end-to-end suite drives the real SDK against real Laya checkpoints on GPU-equipped machines. Load tests use [k6](https://k6.io/).
-
-### Installing (dependencies)
-
-Dependencies are declared in `pyproject.toml` and pinned in `uv.lock` (ADR-0006). The Laya engine + torch are accelerator-specific extras (`cpu` / `cuda`) that pin one torch version and select the matching wheel per architecture. You do **not** have to use uv:
-
-```bash
-# uv (index selection is automatic):
-uv sync --extra cpu        # or --extra cuda
-
-# raw pip — name the torch index explicitly:
-pip install "whatdo[cpu]"  --extra-index-url https://download.pytorch.org/whl/cpu
-pip install "whatdo[cuda]"                     # default PyPI torch bundles cu13
-
-# fully-pinned, reproducible, no uv — from the exported lock:
-pip install -r requirements-cuda.txt                                                       # cuda: torch is on PyPI
-pip install -r requirements-cpu.txt --extra-index-url https://download.pytorch.org/whl/cpu  # cpu: +cpu wheel lives on the PyTorch index
-```
-
-The exported files (`requirements.txt` base, `requirements-cpu.txt`, `requirements-cuda.txt`) are generated from `uv.lock` by `make lock` — never hand-edit them. The `cpu` file pins `torch==2.14.0+cpu`, which is published only on the PyTorch CPU index, so its install (uv or pip) must name that index; the `cuda` file's `torch==2.14.0` comes from PyPI and needs no extra index.
+Developer workflow is driven by a `Makefile` (`make setup`, `lock`, `lint`, `fmt`, `typecheck`, `test`, `test-otel`, `test-slow`, `build-cpu`, `build-cuda`, `docs`, `load-test`, `run`) using `uv` for environments and dependency locking. `make setup` runs `uv sync --extra cpu` (base deps incl. Laya + the CPU torch build, the `dev` group, and the editable package, from `uv.lock`; use `make setup ACCEL=cuda` on a GPU box); `make lock` refreshes `uv.lock` and re-exports the pinned `requirements*.txt`. Tests run against a deterministic `FakeEngine` in CI (no GPU); the full end-to-end suite drives the real SDK against real Laya checkpoints on GPU-equipped machines. Load tests use [k6](https://k6.io/).
 
 ## Container images
 
@@ -119,7 +159,6 @@ One multi-stage `Dockerfile` is parametrized by an `ACCEL` build arg that select
 ```bash
 make build-cpu     # trim CPU image (torch+cpu, no CUDA wheels), serves the real Laya engine
 make build-cuda    # CUDA image (builds on CPU-only hosts; running inference needs a GPU)
-make build-dev     # fast image: laya/torch skipped, FakeEngine default — for smoke tests
 
 docker run -p 8000:8000 whatdo:cpu-dev   # then POST /v1/systemone
 ```
@@ -132,22 +171,6 @@ make build-cpu LAYA_FORK="git+https://github.com/you/laya@my-branch"
 docker build --build-arg ACCEL=cpu \
   --build-arg LAYA_FORK="git+https://github.com/you/laya@my-branch" -t whatdo:cpu .
 ```
-
-## Releases
-
-Releases are tag-driven (`.github/workflows/release.yml`). Pushing a `vX.Y.Z` tag builds and pushes the **cpu** and **cuda** images to **Docker Hub** (`androiddrew/whatdo`) — each tagged `:{version}-{accel}` and `:{accel}`, and the trim cpu image additionally as `:{version}` and `:latest`.
-
-```bash
-git tag v1.2.3 && git push origin v1.2.3    # triggers the release pipeline
-```
-
-Pull a published image:
-
-```bash
-docker pull androiddrew/whatdo:1.2.3       # or :latest, :cuda
-```
-
-The release job authenticates with the `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN` repository secrets (a Docker Hub access token with read/write on the `androiddrew` namespace).
 
 ## License
 

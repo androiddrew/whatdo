@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 
 from whatdo.app import create_app
 from whatdo.config import AuthSettings, Settings
+from whatdo.inference.fake import FakeEngine
 
 _VALID_KEY = "s3cret-key"
 _OTHER_KEY = "second-key"
@@ -22,12 +23,13 @@ def _auth_client() -> TestClient:
     settings = Settings(
         auth=AuthSettings(enabled=True, api_keys=[_VALID_KEY, _OTHER_KEY])
     )
-    return TestClient(create_app(settings=settings))
+    return TestClient(create_app(settings=settings, engine=FakeEngine()))
 
 
 def _noauth_client() -> TestClient:
     """A client for a server with auth disabled."""
-    return TestClient(create_app(settings=Settings(auth=AuthSettings(enabled=False))))
+    settings = Settings(auth=AuthSettings(enabled=False))
+    return TestClient(create_app(settings=settings, engine=FakeEngine()))
 
 
 _BODY = {

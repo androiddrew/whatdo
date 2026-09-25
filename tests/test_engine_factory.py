@@ -15,30 +15,32 @@ from whatdo.inference.fake import FakeEngine
 from whatdo.inference.laya_engine import LayaEngine
 
 
-def test_defaults_to_fake_engine() -> None:
-    assert isinstance(build_engine(Settings()), FakeEngine)
-
-
-def test_selects_laya_engine_without_importing_laya(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("WHATDO_MODEL__ENGINE", "laya")
+def test_defaults_to_laya_engine() -> None:
     engine = build_engine(Settings())
     assert isinstance(engine, LayaEngine)
     # Constructed but not loaded: no laya/torch import happened.
     assert engine.is_ready() is False
 
 
+def test_fake_engine_is_opt_in(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("WHATDO_MODEL__ENGINE", "fake")
+    assert isinstance(build_engine(Settings()), FakeEngine)
+
+
+def _fake(pool_size: int) -> Settings:
+    return Settings(
+        server=ServerSettings(pool_size=pool_size), model=ModelSettings(engine="fake")
+    )
+
+
 def test_build_engines_makes_pool_size_copies() -> None:
-    settings = Settings(server=ServerSettings(pool_size=3))
-    engines = build_engines(settings)
+    engines = build_engines(_fake(3))
     assert len(engines) == 3
     assert all(isinstance(engine, FakeEngine) for engine in engines)
 
 
 def test_build_engines_never_makes_an_empty_pool() -> None:
-    settings = Settings(server=ServerSettings(pool_size=0))
-    assert len(build_engines(settings)) == 1
+    assert len(build_engines(_fake(0))) == 1
 
 
 def test_device_map_spreads_copies_round_robin() -> None:
@@ -99,7 +101,7 @@ def test_allows_at_most_one_copy_on_mps(
 
 
 def test_fake_engine_ignores_the_mps_limit(mps_host: None) -> None:
-    assert len(build_engines(Settings(server=ServerSettings(pool_size=3)))) == 3
+    assert len(build_engines(_fake(3))) == 3
 
 
 def test_rejection_suggests_a_device_map_that_passes(mps_host: None) -> None:

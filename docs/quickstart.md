@@ -9,11 +9,19 @@ The fastest way to a running server is the container image (see
 docker run -p 8000:8000 androiddrew/whatdo:latest
 ```
 
-Or run from a checkout for local development (uses the deterministic
-`FakeEngine` by default, so no GPU or model download is needed):
+Or install from PyPI and start the server with uvicorn. It serves the real
+Laya engine; the first start downloads the **Checkpoint** from Hugging Face,
+which takes a minute or two:
 
 ```bash
-make setup            # create the venv, install dev deps + the package
+pip install whatdo    # CPU-only Linux: add --extra-index-url https://download.pytorch.org/whl/cpu
+uvicorn whatdo.app:app --host 0.0.0.0 --port 8000
+```
+
+Or run from a checkout for local development:
+
+```bash
+make setup            # create the venv, install dev deps + the package (ACCEL=cuda on a GPU box)
 make run              # uvicorn on http://127.0.0.1:8000
 ```
 
@@ -25,8 +33,8 @@ curl -s localhost:8000/readyz    # {"status":"ready"}
 ```
 
 !!! note
-    `/readyz` is `ready` immediately for the default `FakeEngine`. On a real-engine
-    image it returns `503` until the **Checkpoint** finishes loading, then `200`.
+    `/readyz` returns `503` until the **Checkpoint** finishes loading, then
+    `200`. Use `/healthz` for liveness; it doesn't depend on the model.
 
 ## Drive it with the official SDK
 

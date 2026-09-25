@@ -9,10 +9,11 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from whatdo.app import create_app
+from whatdo.inference.fake import FakeEngine
 
 
 def _client() -> TestClient:
-    return TestClient(create_app())
+    return TestClient(create_app(engine=FakeEngine()))
 
 
 def test_unknown_question_type_is_422() -> None:

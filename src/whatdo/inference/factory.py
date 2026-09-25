@@ -16,13 +16,14 @@ def build_engine(settings: Settings, device: str | None = None) -> DecisionEngin
     ``device`` overrides ``settings.model.device`` for this copy, so a pool can
     pin copies to distinct devices (ADR-0003).
     """
-    if settings.model.engine == "laya":
-        return LayaEngine(
-            checkpoint=settings.model.laya_checkpoint,
-            device=device if device is not None else settings.model.device,
-            subfolder=settings.model.laya_subfolder,
-        )
-    return FakeEngine()
+    if settings.model.engine == "fake":
+        # Testing only; the fake engine is never the default (ADR-0007).
+        return FakeEngine()
+    return LayaEngine(
+        checkpoint=settings.model.laya_checkpoint,
+        device=device if device is not None else settings.model.device,
+        subfolder=settings.model.laya_subfolder,
+    )
 
 
 def build_engines(settings: Settings) -> list[DecisionEngine]:
