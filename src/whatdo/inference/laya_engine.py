@@ -42,7 +42,7 @@ def resolves_to_mps(device: str | None) -> bool:
         import torch
     except ImportError:  # pragma: no cover - exercised only without the extra
         return False
-    mps_available = torch.backends.mps.is_available()
+    mps_available = bool(torch.backends.mps.is_available())
     if device is None:
         return mps_available and not torch.cuda.is_available()
     return mps_available and torch.device(device).type == "mps"

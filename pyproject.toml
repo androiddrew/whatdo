@@ -96,9 +96,10 @@ strict = true
 mypy_path = "src"
 files = ["src/whatdo"]
 
-# `laya` is an optional extra imported lazily and ships no type stubs.
+# `laya` and `torch` come from the optional accelerator extras, imported lazily;
+# absent in the base install (and CI), so let mypy treat them as untyped.
 [[tool.mypy.overrides]]
-module = ["laya", "laya.*"]
+module = ["laya", "laya.*", "torch", "torch.*"]
 ignore_missing_imports = true
 
 # OpenTelemetry is the optional `[otel]` extra, imported lazily behind the master
